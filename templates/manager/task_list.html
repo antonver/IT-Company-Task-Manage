@@ -1,0 +1,56 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">All Tasks</h1>
+  <div class="mb-4">
+    <a href="{% url 'manager:task-create' %}" class="btn btn-primary">
+      Create Task
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Filter Tasks</h3>
+          <form method="get" action="">
+            {{ filter_form|crispy }}
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Search Tasks</h3>
+          <form method="get" action="">
+            {{ search_form|crispy }}
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    {% if task_list %}
+      <ul class="list-group">
+        {% for task in task_list %}
+          <li class="list-group-item">
+            <a href="{% url "manager:task-detail" pk=task.id %}">
+              {{ task.name }} - {{ task.priority }} - {{ task.is_completed }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead">WOW, you are lucky, you have <strong>NO TASKS</strong> yet</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

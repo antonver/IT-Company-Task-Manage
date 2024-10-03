@@ -1,0 +1,20 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  <h1>{{ task.name }}</h1>
+  <h2>
+    <a href="{% url "manager:task-delete" pk=task.id%}" class="btn btn-danger link-to-page">Delete</a>
+    
+    <a href="{% url "manager:task-update" pk=task.id%}" class="btn btn-danger link-to-page">Update</a>
+  </h2>
+  <ul>
+  <li>Name: {{ task.name }}</li>
+  <li>Description: {{ task.description }}</li>
+  <li>Deadline: {{ task.deadline }}</li>
+  <li>Is completed {{ task.is_completed }}</li>
+  <li>Priority {{ task.priority }}</li>
+  <li>Type of the task {{ task.task_type }}</li>
+  {% if task.project %}
+    <li>Part of the tasks of {{ task.project }} project</li>
+  {% endif %}
+  </ul>
+{% endblock %}
