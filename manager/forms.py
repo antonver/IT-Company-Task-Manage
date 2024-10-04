@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
-from manager.models import Task, Worker, Project, TaskType
+from manager.models import Task, Worker, Project, TaskType, Position
 
 
 class TaskForm(forms.ModelForm):
@@ -21,11 +21,6 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = "__all__"
 
-
-class WorkerForm(UserCreationForm):
-    class Meta:
-        model = Worker
-        fields = UserCreationForm.Meta.fields + ("position", "team",)
 
 
 class TaskFilterForm(forms.Form):
@@ -50,6 +45,7 @@ class TaskSearchForm(forms.Form):
 
 
 class RegistrationForm(UserCreationForm):
+    model = Worker
     password1 = forms.CharField(
         label=_("Password"),
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
@@ -71,11 +67,17 @@ class RegistrationForm(UserCreationForm):
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Email'
-            })
+            }),
+            "position": forms.ModelChoiceField(attrs={
+                "class": "form-control",
+                "placeholder": "Position"
+            }, queryset=get_user_model().objects.select_related(Position), label="Position"
+            )
         }
 
 
 class LoginForm(AuthenticationForm):
+    model = Worker
     username = UsernameField(label=_("Your Username"),
                              widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Username"}))
     password = forms.CharField(
@@ -86,6 +88,7 @@ class LoginForm(AuthenticationForm):
 
 
 class UserPasswordResetForm(PasswordResetForm):
+    model = Worker
     email = forms.EmailField(widget=forms.EmailInput(attrs={
         'class': 'form-control',
         'placeholder': 'Email'
@@ -93,6 +96,7 @@ class UserPasswordResetForm(PasswordResetForm):
 
 
 class UserSetPasswordForm(SetPasswordForm):
+    model = Worker
     new_password1 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
         'class': 'form-control', 'placeholder': 'New Password'
     }), label="New Password")
@@ -102,6 +106,7 @@ class UserSetPasswordForm(SetPasswordForm):
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
+    model = Worker
     old_password = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
         'class': 'form-control', 'placeholder': 'Old Password'
     }), label='Old Password')
