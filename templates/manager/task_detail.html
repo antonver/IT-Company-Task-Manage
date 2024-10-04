@@ -1,20 +1,25 @@
 {% extends "layouts/base.html" %}
+
 {% block content %}
-  <h1>{{ task.name }}</h1>
-  <h2>
-    <a href="{% url "manager:task-delete" pk=task.id%}" class="btn btn-danger link-to-page">Delete</a>
-    
-    <a href="{% url "manager:task-update" pk=task.id%}" class="btn btn-danger link-to-page">Update</a>
-  </h2>
-  <ul>
-  <li>Name: {{ task.name }}</li>
-  <li>Description: {{ task.description }}</li>
-  <li>Deadline: {{ task.deadline }}</li>
-  <li>Is completed {{ task.is_completed }}</li>
-  <li>Priority {{ task.priority }}</li>
-  <li>Type of the task {{ task.task_type }}</li>
-  {% if task.project %}
-    <li>Part of the tasks of {{ task.project }} project</li>
-  {% endif %}
+<div class="container mt-5">
+  <h1 class="mb-4">{{ task.name }}</h1>
+
+  <div class="mb-4">
+    <a href="{% url "manager:task-delete" pk=task.id %}" class="btn btn-danger">Delete</a>
+    <a href="{% url "manager:task-update" pk=task.id %}" class="btn btn-primary">Update</a>
+  </div>
+
+  <ul class="list-group">
+    <li class="list-group-item"><strong>Name:</strong> {{ task.name }}</li>
+    <li class="list-group-item"><strong>Description:</strong> {{ task.description }}</li>
+    <li class="list-group-item"><strong>Deadline:</strong> {{ task.deadline }}</li>
+    <li class="list-group-item"><strong>Is completed:</strong> {{ task.is_completed }}</li>
+    <li class="list-group-item"><strong>Priority:</strong> {{ task.priority }}</li>
+    <li class="list-group-item"><strong>Type of the task:</strong> {{ task.task_type }}</li>
+    {% if task.project %}
+      <li class="list-group-item"><strong>Part of the tasks of:</strong> {{ task.project }} project</li>
+    {% endif %}
   </ul>
+</div>
 {% endblock %}
+
