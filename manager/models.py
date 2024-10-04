@@ -1,40 +1,72 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import ForeignKey
+from django.urls import reverse
 
 
 class Task(models.Model):
-    priority = [(0, "Low"), (1, "Medium"), (2, "High"), (3, "Very High")]
+    PRIORITY_CHOICES = [(0, "Low"), (1, "Medium"), (2, "High"), (3, "Very High")]
     name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(blank=False, null=False)
     deadline = models.DateField(blank=False, null=False)
     is_completed = models.BooleanField(default=False, null=False)
-    priority = models.CharField(max_length=255, choices=priority, blank=False, null=False)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=False, null=False)
     task_type = models.ForeignKey("TaskType", on_delete=models.CASCADE)
     assignees = models.ManyToManyField(
         "Worker", blank=False, null=False, related_name="tasks"
     )
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, blank=True, null=True,)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
 
 
 class TaskType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Worker(AbstractUser):
-    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="workers")
+    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="workers", null=True, blank=True)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="teams", null=True, blank=True)
+
+    class Meta(AbstractUser.Meta):
+        verbose_name = "worker"
+        verbose_name_plural = "workers"
+
+    def __str__(self):
+        return f"{self.position}: {self.last_name} {self.first_name}"
+
+    def get_absolute_url(self):
+        return reverse("manager:worker-detail", kwargs={"pk":self.pk})
 
 
 class Position(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Team(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     slogan = models.CharField(max_length=255, blank=False, null=False)
-    team_lead = models.OneToOneField(Worker, on_delete=models.CASCADE)
+    team_lead = models.OneToOneField(Worker, on_delete=models.CASCADE, related_name="team_lead")
+
+    def __str__(self):
+        return self.name
 
 
 class Project(models.Model):
-    tasks = models.ManyToManyField("Task", related_name="tasks")
+    deadline = models.DateField(blank=False, null=False)
+    description = models.TextField(blank=False, null=False)
+    name = models.CharField(max_length=255, blank=False, null=False)
     participants = models.ManyToManyField("Worker", related_name="projects")
     teams = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="projects")
+
+    def __str__(self):
+        return self.name
