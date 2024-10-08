@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">{{ task.name }}</h1>
+  <h2 class="mb-4">{{ task.name|upper}}</h2>
 
   <div class="mb-4">
     <a href="{% url "manager:task-delete" pk=task.id %}" class="btn btn-danger">Delete</a>
@@ -10,15 +10,32 @@
   </div>
 
   <ul class="list-group">
-    <li class="list-group-item"><strong>Name:</strong> {{ task.name }}</li>
-    <li class="list-group-item"><strong>Description:</strong> {{ task.description }}</li>
-    <li class="list-group-item"><strong>Deadline:</strong> {{ task.deadline }}</li>
-    <li class="list-group-item"><strong>Is completed:</strong> {{ task.is_completed }}</li>
-    <li class="list-group-item"><strong>Priority:</strong> {{ task.priority }}</li>
-    <li class="list-group-item"><strong>Type of the task:</strong> {{ task.task_type }}</li>
+    <ul class="list-group">
+      <li class="list-group-item"><h5 style="display:inline-block"><strong>Name:</strong></h5> {{ task.name }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Description:</strong></h5> {{ task.description }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Deadline:</strong></h5> {{ task.deadline }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Is completed:</strong></h5> {{ task.is_completed }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Priority:</strong></h5> {{ task.priority }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Type of the task:</strong></h5> {{ task.task_type }}</li>
+
     {% if task.project %}
       <li class="list-group-item"><strong>Part of the tasks of:</strong> {{ task.project }} project</li>
     {% endif %}
+      <br>
+      <li class="list-group-item">
+        <ul class="list-group">
+          <h4>Workers that are occupied by this task:</h4>
+        <br>
+        {% if task.assignees %}
+          {% for t in task.assignees.all %}
+            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.last_name }} {{ t.first_name }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li class ="list-group-item">No one is occupied by this
+        {% endif %}
+      </ul>
+      </li>
+  </ul>
   </ul>
 </div>
 {% endblock %}
