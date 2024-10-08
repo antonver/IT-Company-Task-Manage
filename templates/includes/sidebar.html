@@ -25,7 +25,7 @@
         </li>
         <li>
           <a href="{% url 'manager:task-list' %}" class="nav-link ">
-            <span class="pcoded-micon"><i data-feather="clipboard"></i></span><span class="pcoded-mtext">My tasks</span>
+            <span class="pcoded-micon"><i data-feather="clipboard"></i></span><span class="pcoded-mtext">All tasks</span>
           </a>
         </li> 
         <li>
@@ -36,6 +36,11 @@
         <li>
           <a href="{% url 'manager:team-list' %}" class="nav-link ">
             <span class="pcoded-micon"><i data-feather="slack"></i></span><span class="pcoded-mtext">All teams</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:project-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="code"></i></span><span class="pcoded-mtext">All projects</span>
           </a>
         </li> 
         {% if not request.user.is_authenticated %}
