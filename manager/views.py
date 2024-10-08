@@ -12,7 +12,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 
 from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm, \
-    TeamSearchForm, TeamFilterForm
+    TeamSearchForm, TeamFilterForm, TeamForm
 from manager.models import Task, Team, Worker, Project
 
 
@@ -161,8 +161,11 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
     paginate_by = 5
-    queryset = Task.objects.select_related("team_lead")
+    queryset = (Team.objects.select_related("team_lead").
+                prefetch_related("projects").
+                prefetch_related("workers"))
     ordering = ["name", ]
+    template_name = "manager/team_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -172,7 +175,7 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
-        queryset = self.queryset.select_related("projects")
+        queryset = self.queryset
         search_form = TeamSearchForm(self.request.GET)
         filter_form = TeamSearchForm(self.request.GET)
         if filter_form.is_valid():
@@ -192,17 +195,19 @@ class TeamDetailView(LoginRequiredMixin, generic.DetailView):
 class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     model = Team
     success_url = reverse_lazy("manager:team-list")
+    form_class = TeamForm
 
 
 class TeamUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Team
     success_url = reverse_lazy("manager:team-list")
+    form_class = TeamForm
 
 
 class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Team
     success_url = reverse_lazy("manager:team-list")
-
+    template_name = "manager/team_confirm_delete.html"
 
 # --
 
