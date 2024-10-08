@@ -3,9 +3,9 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">
+  <h2 class="mb-4">
     {{ object|yesno:"Update,Create,No" }} task
-  </h1>
+  </h2>
   <form method="post" action="">
     {% csrf_token %}
     {{ form|crispy }}
