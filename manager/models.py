@@ -10,11 +10,11 @@ class Task(models.Model):
     deadline = models.DateField(blank=False, null=False)
     is_completed = models.BooleanField(default=False, null=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=False, null=False)
-    task_type = models.ForeignKey("TaskType", on_delete=models.CASCADE)
+    task_type = models.ForeignKey("TaskType", on_delete=models.CASCADE, related_name="tasks")
     assignees = models.ManyToManyField(
         "Worker", blank=False, null=False, related_name="tasks"
     )
-    project = models.ForeignKey("Project", on_delete=models.CASCADE, blank=True, null=True,)
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, blank=True, null=True, related_name="tasks")
 
     def __str__(self):
         return self.name
@@ -67,7 +67,7 @@ class Project(models.Model):
     description = models.TextField(blank=False, null=False)
     name = models.CharField(max_length=255, blank=False, null=False)
     participants = models.ManyToManyField("Worker", related_name="projects")
-    teams = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="projects")
+    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="projects")
 
     def __str__(self):
         return self.name
