@@ -12,7 +12,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 
 from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm, \
-    TeamSearchForm, TeamFilterForm, TeamForm
+    TeamSearchForm, TeamFilterForm, TeamForm, ProjectFilterForm, ProjectSearchForm, ProjectForm
 from manager.models import Task, Team, Worker, Project
 
 
@@ -216,7 +216,33 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
     ordering = ["deadline", ]
-    queryset = Project.objects.select_related("teams").prefetch_related("participants")
+    queryset = Project.objects.select_related("team").prefetch_related("participants")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = ProjectSearchForm(initial={"search-name": name}, prefix="search")
+        context["filter_form"] = ProjectFilterForm(prefix="filter")
+        return context
+
+    def get_queryset(self):
+        queryset = self.queryset
+        search_form = TeamSearchForm(self.request.GET)
+        filter_form = TeamSearchForm(self.request.GET)
+        if filter_form.is_valid():
+            deadline = filter_form.cleaned_data.get("filter-deadline", None)
+            participants = filter_form.cleaned_data.get("filter-participants", None)
+            team = filter_form.cleaned_data.get("filter-team", None)
+            if deadline is not None:
+                queryset = queryset.filter(deadline=deadline)
+            if participants is not None:
+                queryset = queryset.filter(participants=participants)
+            if team is not None:
+                queryset = queryset.filter(team=team)
+        if search_form.is_valid():
+            queryset = queryset.filter(name__icontains=search_form.cleaned_data.
+                                       get("search-name", ""))
+        return queryset
 
 
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
@@ -226,16 +252,19 @@ class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
     success_url = reverse_lazy("manager:project-list")
+    form_class = ProjectForm
 
 
 class ProjectUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Project
     success_url = reverse_lazy("manager:project-list")
+    form_class = ProjectForm
 
 
 class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy("manager:project-list")
+    template_name = "manager/project_confirm_delete.html"
 
 
 # Authentication
