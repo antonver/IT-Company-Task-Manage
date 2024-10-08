@@ -39,10 +39,11 @@
   <div class="mt-4">
     {% if task_list %}
       <ul class="list-group">
+      <h4>Tasks:</h4>
         {% for task in task_list %}
           <li class="list-group-item">
             <a href="{% url "manager:task-detail" pk=task.id %}">
-              {{ task.name }} - {{ task.priority }} - {{ task.is_completed }}
+              {{ task.name|capfirst}} - {{ task.get_priority_display }} - {% if task.is_completed %} Completed {% else %} Is not completed {% endif %}
             </a>
           </li>
         {% endfor %}
