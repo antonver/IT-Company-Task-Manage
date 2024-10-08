@@ -1,10 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends "layouts/base.html" %}
+{% load crispy_forms_filters %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">All Projects</h1>
+  <div class="mb-4">
+    <a href="{% url 'manager:project-create' %}" class="btn btn-primary">
+      Create Project
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Filter Projects</h3>
+          <form method="get" action="">
+            {{ filter_form|crispy }}
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Search Projects</h3>
+          <form method="get" action="">
+            {{ search_form|crispy }}
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    {% if project_list %}
+      <ul class="list-group">
+      <h4>Projects:</h4>
+        {% for project in project_list %}
+          <li class="list-group-item">
+            <a href="{% url "manager:project-detail" pk=project.id %}">
+              {{ project.name|capfirst }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead">WOW, you are lucky, you have <strong>NO Projects</strong> yet</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
