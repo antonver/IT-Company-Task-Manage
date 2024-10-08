@@ -28,6 +28,11 @@
             <span class="pcoded-micon"><i data-feather="clipboard"></i></span><span class="pcoded-mtext">My tasks</span>
           </a>
         </li> 
+        <li>
+          <a href="{% url 'manager:worker-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="users"></i></span><span class="pcoded-mtext">All workers</span>
+          </a>
+        </li> 
         {% if not request.user.is_authenticated %}
         <li
           data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe"

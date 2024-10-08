@@ -1,10 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends "layouts/base.html" %}
+{% load crispy_forms_filters %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">All Teams</h1>
+  <div class="mb-4">
+    <a href="{% url 'manager:worker-create' %}" class="btn btn-primary">
+      Create Team
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Filter Teams</h3>
+          <form method="get" action="">
+            {{ filter_form|crispy }}
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Search Teams</h3>
+          <form method="get" action="">
+            {{ search_form|crispy }}
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    {% if team_list %}
+      <ul class="list-group">
+        {% for team in team_list %}
+          <li class="list-group-item">
+            <a href="{% url "manager:team-detail" pk=team.id %}">
+              {{ team.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead">No teams yet</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
