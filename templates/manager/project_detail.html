@@ -1,1 +1,49 @@
 {% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">{{ project.name|upper}}</h2>
+
+  <div class="mb-4">
+    <a href="{% url "manager:project-delete" pk=project.id %}" class="btn btn-danger">Delete</a>
+    <a href="{% url "manager:project-update" pk=project.id %}" class="btn btn-primary">Update</a>
+  </div>
+
+  <ul class="list-group">
+    <ul class="list-group">
+      <li class="list-group-item"><h5 style="display:inline-block"><strong>Name:</strong></h5> {{ project.name }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Description:</strong></h5> {{ project.description }}</li>
+  <li class="list-group-item"><h5 style="display:inline-block"><strong>Deadline:</strong></h5> {{ project.deadline }}</li>
+    <li class="list-group-item"><h5 style="display:inline-block"><strong>Deadline:</strong></h5> {{ project.team }}</li>
+      <br>
+      <li class="list-group-item">
+        <ul class="list-group">
+          <h4>Workers that are occupied by this project:</h4>
+        <br>
+        {% if project.participants %}
+          {% for t in project.participants.all %}
+            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.last_name }} {{ t.first_name }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li class ="list-group-item">No one is occupied by this</li>
+        {% endif %}
+      </ul>
+      </li>
+      <br>
+      <li class="list-group-item">
+        <ul class="list-group">
+          <h4>Tasks that this project contains</h4>
+        <br>
+        {% if project.tasks %}
+          {% for t in project.tasks.all %}
+            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.name }} {{ t.deadline }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li class ="list-group-item">No tasks yet</li>
+        {% endif %}
+      </ul>
+      </li>
+  </ul>
+  </ul>
+</div>
+{% endblock %}
