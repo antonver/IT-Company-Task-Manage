@@ -11,7 +11,8 @@ from django.contrib.auth import logout
 
 from django.contrib.auth.decorators import login_required
 
-from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm
+from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm, \
+    TeamSearchForm, TeamFilterForm
 from manager.models import Task, Team, Worker, Project
 
 
@@ -114,8 +115,8 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         queryset = self.queryset
-        search_form = TaskSearchForm(self.request.GET)
-        filter_form = TaskFilterForm(self.request.GET)
+        search_form = WorkerSearchForm(self.request.GET)
+        filter_form = WorkerFilterForm(self.request.GET)
         if filter_form.is_valid():
             position = filter_form.cleaned_data.get("filter-position", None)
             team = filter_form.cleaned_data.get("filter-team", None)
@@ -165,30 +166,24 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        username = self.request.GET.get("username", "")
-        context["search_form"] = WorkerSearchForm(initial={"search-username": username}, prefix="search")
-        context["filter_form"] = WorkerFilterForm(prefix="filter")
+        name = self.request.GET.get("name", "")
+        context["search_form"] = TeamSearchForm(initial={"search-name": name}, prefix="search")
+        context["filter_form"] = TeamFilterForm(prefix="filter")
         return context
 
     def get_queryset(self):
-        queryset = self.queryset
-        search_form = TaskSearchForm(self.request.GET)
-        filter_form = TaskFilterForm(self.request.GET)
+        queryset = self.queryset.select_related("projects")
+        search_form = TeamSearchForm(self.request.GET)
+        filter_form = TeamSearchForm(self.request.GET)
         if filter_form.is_valid():
-            position = filter_form.cleaned_data.get("filter-position", None)
-            team = filter_form.cleaned_data.get("filter-team", None)
-            project = filter_form.cleaned_data.get("filter-project", None)
-            if position is not None:
-                queryset = queryset.filter(position=position)
-            if team is not None:
-                queryset = queryset.filter(team=team)
-            if project is not None:
-                queryset = queryset.filter(project=filter_form.
-                                           project)
+            projects = filter_form.cleaned_data.get("filter-projects", None)
+            if projects is not None:
+                queryset = queryset.filter(projects=projects)
         if search_form.is_valid():
-            queryset = queryset.filter(username__icontains=search_form.cleaned_data.
-                                       get("search-username", ""))
+            queryset = queryset.filter(name__icontains=search_form.cleaned_data.
+                                       get("search-name", ""))
         return queryset
+
 
 class TeamDetailView(LoginRequiredMixin, generic.DetailView):
     model = Team
