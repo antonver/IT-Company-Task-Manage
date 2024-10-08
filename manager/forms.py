@@ -64,6 +64,17 @@ class WorkerFilterForm(forms.Form):
     project = forms.ModelChoiceField(queryset=Project.objects.all(), label="project", empty_label="Project")
 
 
+class TeamForm(forms.Form):
+    class Meta:
+        fields = "__all__"
+        model = Team
+
+
+class TeamFilterForm(forms.Form):
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects", empty_label="Projects")
+
+class TeamSearchForm(forms.Form):
+    name = forms.CharField(required=True, max_length=255)
 
 class RegistrationForm(UserCreationForm):
     model = Worker
