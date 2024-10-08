@@ -32,11 +32,12 @@ class TaskType(models.Model):
 
 class Worker(AbstractUser):
     position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="workers", null=True, blank=True)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="teams", null=True, blank=True)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="workers", null=True, blank=True)
 
     class Meta(AbstractUser.Meta):
         verbose_name = "worker"
         verbose_name_plural = "workers"
+        ordering = ["position"]
 
     def __str__(self):
         return f"{self.position}: {self.last_name} {self.first_name}"
