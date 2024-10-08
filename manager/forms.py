@@ -30,7 +30,7 @@ class WorkerForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = Worker
-        fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name", )
+        fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name",)
 
 
 class TaskFilterForm(forms.Form):
@@ -71,9 +71,31 @@ class TeamForm(forms.Form):
 
 
 class TeamFilterForm(forms.Form):
-    projects = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects", empty_label="Projects")
+    projects = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects",
+                                      empty_label="Projects")
+
 
 class TeamSearchForm(forms.Form):
+    name = forms.CharField(required=True, max_length=255)
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        fields = "__all__"
+        model = Project
+
+
+class ProjectFilterForm(forms.Form):
+    deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date',
+                                                             'class': 'datepicker'}))
+    participants = forms.ModelChoiceField(queryset=Worker.objects.all(), label="participants",
+                                          empty_label="Participants",
+                                          widget=forms.SelectMultiple({'class': 'form-control'}))
+    team = forms.ModelChoiceField(queryset=Team.objects.all(),
+                                  widget=forms.SelectMultiple({'class': 'form-control'}))
+
+
+class ProjectSearchForm(forms.Form):
     name = forms.CharField(required=True, max_length=255)
 
 class RegistrationForm(UserCreationForm):
