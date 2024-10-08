@@ -71,7 +71,7 @@ class TeamForm(forms.Form):
 
 
 class TeamFilterForm(forms.Form):
-    project = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects", empty_label="Projects")
+    projects = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects", empty_label="Projects")
 
 class TeamSearchForm(forms.Form):
     name = forms.CharField(required=True, max_length=255)
