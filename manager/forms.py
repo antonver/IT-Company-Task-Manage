@@ -2,11 +2,12 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, \
+    PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
-from manager.models import Task, Worker, Project, TaskType, Position
+from manager.models import Task, Worker, Project, TaskType, Position, Team
 
 
 class TaskForm(forms.ModelForm):
@@ -21,6 +22,15 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = "__all__"
 
+
+class WorkerForm(UserCreationForm):
+    tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.all(),
+                                           widget=forms.SelectMultiple({'class': 'form-control'}))
+    position = forms.ModelChoiceField(queryset=Position.objects.all())
+
+    class Meta(UserCreationForm.Meta):
+        model = Worker
+        fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name", )
 
 
 class TaskFilterForm(forms.Form):
@@ -42,6 +52,17 @@ class TaskFilterForm(forms.Form):
 
 class TaskSearchForm(forms.Form):
     name = forms.CharField(required=True, max_length=255)
+
+
+class WorkerSearchForm(forms.Form):
+    username = forms.CharField(required=True, max_length=255)
+
+
+class WorkerFilterForm(forms.Form):
+    position = forms.ModelChoiceField(queryset=Position.objects.all(), label="position", empty_label="Position")
+    team = forms.ModelChoiceField(queryset=Team.objects.all(), label="team", empty_label="Team")
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), label="project", empty_label="Project")
+
 
 
 class RegistrationForm(UserCreationForm):
@@ -68,11 +89,9 @@ class RegistrationForm(UserCreationForm):
                 'class': 'form-control',
                 'placeholder': 'Email'
             }),
-            "position": forms.ModelChoiceField(attrs={
-                "class": "form-control",
-                "placeholder": "Position"
-            }, queryset=get_user_model().objects.select_related(Position), label="Position"
-            )
+            "position": forms.ModelChoiceField(queryset=get_user_model().objects.select_related("position"),
+                                               label="Position"
+                                               )
         }
 
 
