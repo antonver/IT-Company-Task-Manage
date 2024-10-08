@@ -1,11 +1,11 @@
 {% extends "layouts/base.html" %}
 {% load crispy_forms_filters %}
-
+{% load templatetags %}
 {% block content %}
 <div class="container mt-5">
   <h1 class="mb-4">All Teams</h1>
   <div class="mb-4">
-    <a href="{% url 'manager:worker-create' %}" class="btn btn-primary">
+    <a href="{% url 'manager:team-create' %}" class="btn btn-primary">
       Create Team
     </a>
   </div>
