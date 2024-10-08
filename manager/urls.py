@@ -6,7 +6,7 @@ from Task_manager import settings
 from manager.views import index, TaskListView, TaskDetailView, TaskCreateView, TaskUpdateView, TaskDeleteView, \
     WorkerListView, WorkerDetailView, WorkerUpdateView, WorkerDeleteView, TeamDetailView, \
     TeamCreateView, TeamUpdateView, TeamDeleteView, ProjectListView, ProjectDetailView, ProjectCreateView, \
-    ProjectUpdateView, ProjectDeleteView, WorkerCreateView
+    ProjectUpdateView, ProjectDeleteView, WorkerCreateView, TeamListView
 
 urlpatterns = [path("", index, name="index"),
                path("admin/", admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [path("", index, name="index"),
                     name="worker-update"),
                path("worker/<int:pk>/delete/", WorkerDeleteView.as_view(),
                     name="worker-delete"),
-               path("team/", WorkerListView.as_view(),
+               path("team/", TeamListView.as_view(),
                     name="team-list"),
                path("team/<int:pk>/", TeamDetailView.as_view(),
                     name="team-detail"),
