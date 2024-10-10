@@ -43,6 +43,22 @@
             <span class="pcoded-micon"><i data-feather="code"></i></span><span class="pcoded-mtext">All projects</span>
           </a>
         </li> 
+        <hr>
+        <li>
+          <a href="{% url 'manager:my-task-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="clipboard" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My tasks</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:my-project-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="code" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My projects</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:team-detail' pk=request.user.id %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="slack" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My team</span>
+          </a>
+        </li> 
         {% if not request.user.is_authenticated %}
         <li
           data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe"
