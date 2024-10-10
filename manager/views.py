@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
@@ -19,13 +20,25 @@ from manager.models import Task, Team, Worker, Project
 # Create your views here.
 @login_required
 def index(request):
-    num_tasks = Task.objects.count()
-    num_teams = Team.objects.count()
-    num_workers = Worker.objects.count()
+    today = timezone.now()
+    my_tasks_month = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month, deadline__year=today.year).count()
+    my_tasks_month_done = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month, deadline__year=today.year, is_completed=True).count()
+    if my_tasks_month != 0:
+        per_my_tasks = round((my_tasks_month_done / my_tasks_month)) * 100
+    else:
+        per_my_tasks = 0
+    my_projects_month = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
+                                         deadline__year=today.year).count()
+    my_projects_month_done = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
+                                              deadline__year=today.year, is_completed=True).count()
+    if my_projects_month != 0:
+        per_my_projects = round((my_projects_month_done / my_projects_month)) * 100
+    else:
+        per_my_projects = 0
+
     context = {
-        "num_tasks": num_tasks,
-        "num_teams": num_teams,
-        "num_workers": num_workers,
+        "per_my_tasks": per_my_tasks,
+        "per_my_projects": per_my_projects,
     }
     return render(request, template_name="pages/index.html", context=context)
 
@@ -75,6 +88,16 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         return queryset
 
 
+class MyTaskListView(TaskListView):
+    def get_queryset(self):
+        return super().get_queryset().filter(assignees=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["mytask"] = "yes"
+        return context
+
+
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
 
@@ -84,11 +107,21 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = TaskForm
     success_url = reverse_lazy("manager:task-list")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
 
 class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Task
     form_class = TaskForm
     success_url = reverse_lazy("manager:task-list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
 
 class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -191,6 +224,11 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
 class TeamDetailView(LoginRequiredMixin, generic.DetailView):
     model = Team
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["worker_id"] = Team.objects.get(id=self.kwargs["pk"]).id
+        return context
+
 
 class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     model = Team
@@ -243,6 +281,16 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
             queryset = queryset.filter(name__icontains=search_form.cleaned_data.
                                        get("search-name", ""))
         return queryset
+
+
+class MyProjectListView(ProjectListView):
+    def get_queryset(self):
+        return super().get_queryset().filter(participants=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["myproject"] = "yes"
+        return context
 
 
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
@@ -298,3 +346,4 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 def logout_view(request):
     logout(request)
     return redirect('/accounts/login/')
+
