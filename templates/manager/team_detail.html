@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4">{{ team.name|upper}}</h2>
+  <h2 class="mb-4">{% if request.user.id == worker_id %}My team:  {% endif %}{{ team.name|upper}}</h2>
 
   <div class="mb-4">
     <a href="{% url "manager:team-delete" pk=team.id %}" class="btn btn-danger">Delete</a>
