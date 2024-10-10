@@ -68,6 +68,7 @@ class Project(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     participants = models.ManyToManyField("Worker", related_name="projects")
     team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="projects")
+    is_completed = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return self.name
