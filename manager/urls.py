@@ -6,7 +6,7 @@ from Task_manager import settings
 from manager.views import index, TaskListView, TaskDetailView, TaskCreateView, TaskUpdateView, TaskDeleteView, \
     WorkerListView, WorkerDetailView, WorkerUpdateView, WorkerDeleteView, TeamDetailView, \
     TeamCreateView, TeamUpdateView, TeamDeleteView, ProjectListView, ProjectDetailView, ProjectCreateView, \
-    ProjectUpdateView, ProjectDeleteView, WorkerCreateView, TeamListView
+    ProjectUpdateView, ProjectDeleteView, WorkerCreateView, TeamListView, MyTaskListView, MyProjectListView
 
 urlpatterns = [path("", index, name="index"),
                path("admin/", admin.site.urls),
@@ -49,7 +49,12 @@ urlpatterns = [path("", index, name="index"),
                path("project/<int:pk>/update/", ProjectUpdateView.as_view(),
                     name="project-update"),
                path("project/<int:pk>/delete/", ProjectDeleteView.as_view(),
-                    name="project-delete"),]
+                    name="project-delete"),
+               path("my_tasks/", MyTaskListView.as_view(),
+                    name="my-task-list"),
+               path("my_projects/", MyProjectListView.as_view(),
+                    name="my-project-list"),
+               ]
 
 
 app_name = "manager"
