@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">All Tasks</h1>
+  <h1 class="mb-4">{{ mytask|yesno:"My,All,No" }} Tasks</h1>
   <div class="mb-4">
     <a href="{% url 'manager:task-create' %}" class="btn btn-primary">
       Create Task
