@@ -22,6 +22,13 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields["assignees"].queryset = get_user_model().objects.all()
+            self.fields["assignees"].label_from_instance = lambda obj: f"{obj} {'(Me)' if obj.id == user.id else ''}"
+
 
 class WorkerForm(UserCreationForm):
     tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.all(),
