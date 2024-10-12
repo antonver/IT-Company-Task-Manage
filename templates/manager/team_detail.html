@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4">{% if request.user.id == worker_id %}My team:  {% endif %}{{ team.name|upper}}</h2>
+  <h2 class="mb-4">{% if worker_is_here %}My team:  {% endif %}{{ team.name|upper}}</h2>
 
   <div class="mb-4">
     <a href="{% url "manager:team-delete" pk=team.id %}" class="btn btn-danger">Delete</a>
@@ -21,7 +21,7 @@
         <br>
         {% if team.workers %}
           {% for t in team.workers.all %}
-            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.last_name }} {{ t.first_name }}</a></li>
+            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.last_name }} {{ t.first_name }} {% if t.id == request.user.id %} (Me) {% endif %}</a></li>
           {% endfor %}
         {% else %}
           <li class ="list-group-item">No workers
@@ -35,7 +35,7 @@
         <br>
         {% if team.projects %}
           {% for t in team.projects.all %}
-            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.name }}</a></li>
+            <li class ="list-group-item"><a href="{% url "manager:project-detail" pk=t.id %}">{{ t.name }}</a></li>
           {% endfor %}
         {% else %}
           <li class ="list-group-item">No projects
