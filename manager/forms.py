@@ -71,10 +71,21 @@ class WorkerFilterForm(forms.Form):
     project = forms.ModelChoiceField(queryset=Project.objects.all(), label="project", empty_label="Project")
 
 
-class TeamForm(forms.Form):
+class TeamForm(forms.ModelForm):
+    workers = forms.ModelMultipleChoiceField(queryset=Worker.objects.all(), label="Workers")
+    projects = forms.ModelMultipleChoiceField(queryset=Project.objects.all(), label="Projects")
+
     class Meta:
         fields = "__all__"
         model = Team
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields["workers"].queryset = get_user_model().objects.all()
+            self.fields["workers"].label_from_instance = lambda obj: f"{obj} {'(Me)' if obj.id == user.id else ''}"
+
 
 
 class TeamFilterForm(forms.Form):
@@ -87,6 +98,9 @@ class TeamSearchForm(forms.Form):
 
 
 class ProjectForm(forms.ModelForm):
+    deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date',
+                                                             'class': 'datepicker'}))
+    tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.all(), label="tasks")
     class Meta:
         fields = "__all__"
         model = Project
@@ -104,6 +118,7 @@ class ProjectFilterForm(forms.Form):
 
 class ProjectSearchForm(forms.Form):
     name = forms.CharField(required=True, max_length=255)
+
 
 class RegistrationForm(UserCreationForm):
     model = Worker
