@@ -42,7 +42,7 @@
         {% for team in team_list %}
           <li class="list-group-item">
             <a href="{% url "manager:team-detail" pk=team.id %}">
-              {{ team.name }}
+              {{ team.name }} {% if team_id == team.id %}(My Team) {% endif %}
             </a>
           </li>
         {% endfor %}
