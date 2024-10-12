@@ -193,15 +193,18 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
-    paginate_by = 5
     queryset = (Team.objects.select_related("team_lead").
                 prefetch_related("projects").
                 prefetch_related("workers"))
     ordering = ["name", ]
     template_name = "manager/team_list.html"
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        for team in Team.objects.all():
+            if self.request.user.id in [worker.id for worker in team.workers.all()]:
+                context["team_id"] = team.id
         name = self.request.GET.get("name", "")
         context["search_form"] = TeamSearchForm(initial={"search-name": name}, prefix="search")
         context["filter_form"] = TeamFilterForm(prefix="filter")
@@ -226,7 +229,11 @@ class TeamDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["worker_id"] = Team.objects.get(id=self.kwargs["pk"]).id
+        k = 0
+        for worker in Team.objects.get(id=self.kwargs["pk"]).workers.all():
+            if worker.id == self.request.user.id:
+                context["worker_is_here"] = True
+                break
         return context
 
 
@@ -235,11 +242,33 @@ class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("manager:team-list")
     form_class = TeamForm
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.instance.workers.set(form.cleaned_data["workers"])
+        form.instance.projects.set(form.cleaned_data["projects"])
+        return response
+
 
 class TeamUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Team
     success_url = reverse_lazy("manager:team-list")
     form_class = TeamForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.instance.workers.set(form.cleaned_data["workers"])
+        form.instance.projects.set(form.cleaned_data["projects"])
+        return response
 
 
 class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -302,11 +331,23 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("manager:project-list")
     form_class = ProjectForm
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.instance.participants.set(form.cleaned_data["participants"])
+        form.instance.tasks.set(form.cleaned_data["tasks"])
+        return response
+
 
 class ProjectUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Project
     success_url = reverse_lazy("manager:project-list")
     form_class = ProjectForm
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.instance.participants.set(form.cleaned_data["participants"])
+        form.instance.tasks.set(form.cleaned_data["tasks"])
+        return response
 
 
 class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
