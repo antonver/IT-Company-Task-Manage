@@ -53,12 +53,14 @@
           <a href="{% url 'manager:my-project-list' %}" class="nav-link ">
             <span class="pcoded-micon"><i data-feather="code" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My projects</span>
           </a>
-        </li> 
+        </li>
+      {% if request.user.team  %}
         <li>
-          <a href="{% url 'manager:team-detail' pk=request.user.id %}" class="nav-link ">
+          <a href="{% url 'manager:team-detail' pk=request.user.team.id %}" class="nav-link ">
             <span class="pcoded-micon"><i data-feather="slack" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My team</span>
           </a>
         </li> 
+      {% endif %}
         {% if not request.user.is_authenticated %}
         <li
           data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe"
