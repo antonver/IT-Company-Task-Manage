@@ -7347,21 +7347,7 @@ table.dataTable.fixedHeader-floating {
 /**  =====================
       Foo-table css start
 ==========================  **/
-.footable .pagination > .active > a,
-.footable .pagination > .active > span {
-  background-color: #04a9f5;
-  border-color: #04a9f5;
-}
-.footable .pagination > .active > a:focus, .footable .pagination > .active > a:hover,
-.footable .pagination > .active > span:focus,
-.footable .pagination > .active > span:hover {
-  background-color: #04a9f5;
-  border-color: #04a9f5;
-}
-.footable .pagination > li > a,
-.footable .pagination > li > span {
-  color: #222;
-}
+
 
 .footable-details.table,
 .footable.table {
