@@ -51,6 +51,9 @@
       <p class="lead">No teams yet</p>
     {% endif %}
   </div>
+   {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
 </div>
 {% endblock %}
 
