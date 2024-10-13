@@ -52,6 +52,9 @@
       <p class="lead">WOW, you are lucky, you have <strong>NO TASKS</strong> yet</p>
     {% endif %}
   </div>
+   {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
 </div>
 {% endblock %}
 
