@@ -9,7 +9,6 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordRes
 from django.views.generic import CreateView
 from django.contrib.auth import logout
 
-
 from django.contrib.auth.decorators import login_required
 
 from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm, \
@@ -21,16 +20,18 @@ from manager.models import Task, Team, Worker, Project
 @login_required
 def index(request):
     today = timezone.now()
-    my_tasks_month = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month, deadline__year=today.year).count()
-    my_tasks_month_done = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month, deadline__year=today.year, is_completed=True).count()
+    my_tasks_month = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month,
+                                         deadline__year=today.year).count()
+    my_tasks_month_done = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month,
+                                              deadline__year=today.year, is_completed=True).count()
     if my_tasks_month != 0:
         per_my_tasks = round((my_tasks_month_done / my_tasks_month)) * 100
     else:
         per_my_tasks = 0
     my_projects_month = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
-                                         deadline__year=today.year).count()
+                                               deadline__year=today.year).count()
     my_projects_month_done = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
-                                              deadline__year=today.year, is_completed=True).count()
+                                                    deadline__year=today.year, is_completed=True).count()
     if my_projects_month != 0:
         per_my_projects = round((my_projects_month_done / my_projects_month)) * 100
     else:
@@ -50,20 +51,19 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     paginate_by = 5
     template_name = "manager/task_list.html"
-    queryset = Task.objects.select_related("task_type").prefetch_related("assignees")
+    queryset = Task.objects.select_related("task_type").prefetch_related("assignees").order_by("deadline")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         name = self.request.GET.get("search-name", "")
-        print(name)
-        context["search_form"] = TaskSearchForm(initial={"search-name": name}, prefix="search")
+        context["search_form"] = TaskSearchForm(initial={"name": name}, prefix="search")
         context["filter_form"] = TaskFilterForm(prefix="filter")
         return context
 
     def get_queryset(self):
-        queryset = self.queryset
-        search_form = TaskSearchForm(self.request.GET)
-        filter_form = TaskFilterForm(self.request.GET)
+        queryset = super().get_queryset()
+        search_form = TaskSearchForm(self.request.GET, prefix="search")
+        filter_form = TaskFilterForm(self.request.GET, prefix="filter")
         if filter_form.is_valid():
             is_completed = filter_form.cleaned_data.get("is_completed", None)
             priority = filter_form.cleaned_data.get("priority", None)
@@ -81,9 +81,9 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
             if assignees is not None:
                 queryset = queryset.filter(assignees=assignees)
         if search_form.is_valid():
-            return (queryset.
-                    filter(name__icontains=search_form.cleaned_data.
-                           get("search-name", "")))
+            queryset = (queryset.
+                        filter(name__icontains=search_form.cleaned_data.
+                               get("name", "")))
 
         return queryset
 
@@ -141,29 +141,28 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        username = self.request.GET.get("username", "")
-        context["search_form"] = WorkerSearchForm(initial={"search-username": username}, prefix="search")
+        username = self.request.GET.get("search-username", "")
+        context["search_form"] = WorkerSearchForm(initial={"username": username}, prefix="search")
         context["filter_form"] = WorkerFilterForm(prefix="filter")
         return context
 
     def get_queryset(self):
         queryset = self.queryset
-        search_form = WorkerSearchForm(self.request.GET)
-        filter_form = WorkerFilterForm(self.request.GET)
+        search_form = WorkerSearchForm(self.request.GET, prefix="search")
+        filter_form = WorkerFilterForm(self.request.GET, prefix="filter")
         if filter_form.is_valid():
-            position = filter_form.cleaned_data.get("filter-position", None)
-            team = filter_form.cleaned_data.get("filter-team", None)
-            project = filter_form.cleaned_data.get("filter-project", None)
-            if position is not None:
+            position = filter_form.cleaned_data.get("position", None)
+            team = filter_form.cleaned_data.get("team", None)
+            projects = filter_form.cleaned_data.get("projects", None)
+            if position:
                 queryset = queryset.filter(position=position)
-            if team is not None:
+            if team:
                 queryset = queryset.filter(team=team)
-            if project is not None:
-                queryset = queryset.filter(project=filter_form.
-                                           project)
+            if projects:
+                queryset = queryset.filter(projects=projects)
         if search_form.is_valid():
             queryset = queryset.filter(username__icontains=search_form.cleaned_data.
-                                       get("search-username", ""))
+                                       get("username", ""))
         return queryset
 
 
@@ -188,6 +187,7 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("manager:worker-list")
     template_name = "manager/worker_confirm_delete.html"
 
+
 # ----
 
 
@@ -195,8 +195,7 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
     queryset = (Team.objects.select_related("team_lead").
                 prefetch_related("projects").
-                prefetch_related("workers"))
-    ordering = ["name", ]
+                prefetch_related("workers")).order_by("name",)
     template_name = "manager/team_list.html"
     paginate_by = 5
 
@@ -205,22 +204,22 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
         for team in Team.objects.all():
             if self.request.user.id in [worker.id for worker in team.workers.all()]:
                 context["team_id"] = team.id
-        name = self.request.GET.get("name", "")
+        name = self.request.GET.get("search-name", "")
         context["search_form"] = TeamSearchForm(initial={"search-name": name}, prefix="search")
         context["filter_form"] = TeamFilterForm(prefix="filter")
         return context
 
     def get_queryset(self):
         queryset = self.queryset
-        search_form = TeamSearchForm(self.request.GET)
-        filter_form = TeamSearchForm(self.request.GET)
+        search_form = TeamSearchForm(self.request.GET, prefix="search")
+        filter_form = TeamFilterForm(self.request.GET, prefix="filter")
         if filter_form.is_valid():
-            projects = filter_form.cleaned_data.get("filter-projects", None)
+            projects = filter_form.cleaned_data.get("projects", None)
             if projects is not None:
                 queryset = queryset.filter(projects=projects)
         if search_form.is_valid():
             queryset = queryset.filter(name__icontains=search_form.cleaned_data.
-                                       get("search-name", ""))
+                                       get("name", ""))
         return queryset
 
 
@@ -276,40 +275,41 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("manager:team-list")
     template_name = "manager/team_confirm_delete.html"
 
+
 # --
 
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
-    ordering = ["deadline", ]
-    queryset = Project.objects.select_related("team").prefetch_related("participants")
+    queryset = Project.objects.select_related("team").prefetch_related("participants").order_by("deadline")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = ProjectSearchForm(initial={"search-name": name}, prefix="search")
+        name = self.request.GET.get("search-name", "")
+        context["search_form"] = ProjectSearchForm(initial={"name": name}, prefix="search")
         context["filter_form"] = ProjectFilterForm(prefix="filter")
         return context
 
     def get_queryset(self):
         queryset = self.queryset
-        search_form = TeamSearchForm(self.request.GET)
-        filter_form = TeamSearchForm(self.request.GET)
+        search_form = ProjectSearchForm(self.request.GET, prefix="search")
+        filter_form = ProjectFilterForm(self.request.GET, prefix="filter")
         if filter_form.is_valid():
-            deadline = filter_form.cleaned_data.get("filter-deadline", None)
-            participants = filter_form.cleaned_data.get("filter-participants", None)
-            team = filter_form.cleaned_data.get("filter-team", None)
-            if deadline is not None:
+            deadline = filter_form.cleaned_data.get("deadline", None)
+            participants = filter_form.cleaned_data.get("participants", None)
+            team = filter_form.cleaned_data.get("team", None)
+            if deadline:
                 queryset = queryset.filter(deadline=deadline)
-            if participants is not None:
-                queryset = queryset.filter(participants=participants)
-            if team is not None:
-                queryset = queryset.filter(team=team)
+            if participants:
+                queryset = queryset.filter(participants__in=participants)
+            if team:
+                queryset = queryset.filter(team__in=team)
         if search_form.is_valid():
             queryset = queryset.filter(name__icontains=search_form.cleaned_data.
-                                       get("search-name", ""))
+                                       get("name", ""))
         return queryset
+
 
 
 class MyProjectListView(ProjectListView):
@@ -387,4 +387,3 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 def logout_view(request):
     logout(request)
     return redirect('/accounts/login/')
-
