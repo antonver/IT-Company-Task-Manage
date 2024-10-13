@@ -58,17 +58,17 @@ class TaskFilterForm(forms.Form):
 
 
 class TaskSearchForm(forms.Form):
-    name = forms.CharField(required=True, max_length=255)
+    name = forms.CharField(required=False, max_length=255)
 
 
 class WorkerSearchForm(forms.Form):
-    username = forms.CharField(required=True, max_length=255)
+    username = forms.CharField(required=False, max_length=255)
 
 
 class WorkerFilterForm(forms.Form):
-    position = forms.ModelChoiceField(queryset=Position.objects.all(), label="position", empty_label="Position")
-    team = forms.ModelChoiceField(queryset=Team.objects.all(), label="team", empty_label="Team")
-    project = forms.ModelChoiceField(queryset=Project.objects.all(), label="project", empty_label="Project")
+    position = forms.ModelChoiceField(queryset=Position.objects.all(), label="position", empty_label="Position", required=False)
+    team = forms.ModelChoiceField(queryset=Team.objects.all(), label="team", empty_label="Team", required=False)
+    projects = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects", empty_label="Projects", required=False)
 
 
 class TeamForm(forms.ModelForm):
@@ -87,37 +87,35 @@ class TeamForm(forms.ModelForm):
             self.fields["workers"].label_from_instance = lambda obj: f"{obj} {'(Me)' if obj.id == user.id else ''}"
 
 
-
 class TeamFilterForm(forms.Form):
     projects = forms.ModelChoiceField(queryset=Project.objects.all(), label="projects",
-                                      empty_label="Projects")
+                                      empty_label="Projects", required=False)
 
 
 class TeamSearchForm(forms.Form):
-    name = forms.CharField(required=True, max_length=255)
+    name = forms.CharField(required=False, max_length=255)
 
 
 class ProjectForm(forms.ModelForm):
     deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date',
                                                              'class': 'datepicker'}))
     tasks = forms.ModelMultipleChoiceField(queryset=Task.objects.all(), label="tasks")
+
     class Meta:
         fields = "__all__"
         model = Project
 
 
 class ProjectFilterForm(forms.Form):
-    deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date',
-                                                             'class': 'datepicker'}))
-    participants = forms.ModelChoiceField(queryset=Worker.objects.all(), label="participants",
-                                          empty_label="Participants",
-                                          widget=forms.SelectMultiple({'class': 'form-control'}))
-    team = forms.ModelChoiceField(queryset=Team.objects.all(),
-                                  widget=forms.SelectMultiple({'class': 'form-control'}))
+    deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}), required=False)
+    participants = forms.ModelMultipleChoiceField(queryset=Worker.objects.all(), label="Participants",
+                                                  widget=forms.SelectMultiple(attrs={'class': 'form-control'}), required=False)
+    team = forms.ModelMultipleChoiceField(queryset=Team.objects.all(),
+                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}), required=False)
 
 
 class ProjectSearchForm(forms.Form):
-    name = forms.CharField(required=True, max_length=255)
+    name = forms.CharField(required=False, max_length=255)
 
 
 class RegistrationForm(UserCreationForm):
