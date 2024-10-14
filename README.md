@@ -38,11 +38,45 @@ The IT Company Task Manager is a task management system designed to organize wor
 ### Installation Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/antonver/IT-Company-Task-Manage.git
-  
-Structure:
-![Диаграмма без названия drawio](https://github.com/user-attachments/assets/207eb4fe-84fa-4e7b-b91e-52b64ecd3dd6)
+    git clone https://github.com/antonver/IT-Company-Task-Manage.git
+    cd IT-Company-Task-Manage cd IT-Company-Task-Manage
+# Set Up for Unix, MacOS:
 
+
+```
+    $ virtualenv env
+    $ source env/bin/activate
+    $ pip3 install -r requirements.txt
+```
+
+Set up Database:
+```
+$ python manage.py makemigrations
+$ python manage.py migrate
+```
+Start the app:
+ ```
+$ python manage.py runserver
+```
+# Set Up for Windows: 
+```
+$ virtualenv env
+$ .\env\Scripts\activate
+$ pip3 install -r requirements.txt
+```
+Set Up Database
+```
+$ python manage.py makemigrations
+$ python manage.py migrate
+```
+
+Start the app
+```
+$ python manage.py runserver
+```
+
+# Structure:
+![Диаграмма без названия drawio](https://github.com/user-attachments/assets/207eb4fe-84fa-4e7b-b91e-52b64ecd3dd6)
 
 
   
