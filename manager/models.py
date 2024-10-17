@@ -10,15 +10,18 @@ class Task(models.Model):
     deadline = models.DateField(blank=False, null=False)
     is_completed = models.BooleanField(default=False, null=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=False, null=False)
-    task_type = models.ForeignKey("TaskType", on_delete=models.CASCADE, related_name="tasks")
+    task_type = models.ForeignKey(
+        "TaskType", on_delete=models.CASCADE, related_name="tasks"
+    )
     assignees = models.ManyToManyField(
         "Worker", blank=False, null=False, related_name="tasks"
     )
-    project = models.ForeignKey("Project", on_delete=models.CASCADE, blank=True, null=True, related_name="tasks")
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, blank=True, null=True, related_name="tasks"
+    )
 
     def __str__(self):
         return self.name
-
 
 
 class TaskType(models.Model):
@@ -29,8 +32,16 @@ class TaskType(models.Model):
 
 
 class Worker(AbstractUser):
-    position = models.ForeignKey("Position", on_delete=models.CASCADE, related_name="workers", null=True, blank=True)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name="workers", null=True, blank=True)
+    position = models.ForeignKey(
+        "Position",
+        on_delete=models.CASCADE,
+        related_name="workers",
+        null=True,
+        blank=True,
+    )
+    team = models.ForeignKey(
+        "Team", on_delete=models.CASCADE, related_name="workers", null=True, blank=True
+    )
 
     class Meta(AbstractUser.Meta):
         verbose_name = "worker"
@@ -41,7 +52,7 @@ class Worker(AbstractUser):
         return f"{self.position}: {self.last_name} {self.first_name}"
 
     def get_absolute_url(self):
-        return reverse("manager:worker-detail", kwargs={"pk":self.pk})
+        return reverse("manager:worker-detail", kwargs={"pk": self.pk})
 
 
 class Position(models.Model):
@@ -54,7 +65,9 @@ class Position(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     slogan = models.CharField(max_length=255, blank=False, null=False)
-    team_lead = models.OneToOneField(Worker, on_delete=models.CASCADE, related_name="team_lead")
+    team_lead = models.OneToOneField(
+        Worker, on_delete=models.CASCADE, related_name="team_lead"
+    )
 
     def __str__(self):
         return self.name
