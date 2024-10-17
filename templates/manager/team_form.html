@@ -1,0 +1,15 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">
+    {{ object|yesno:"Update,Create,No" }} team
+  </h2>
+  <form method="post" action="">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% endblock %}

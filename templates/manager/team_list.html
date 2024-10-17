@@ -1,0 +1,59 @@
+{% extends "layouts/base.html" %}
+{% load crispy_forms_filters %}
+{% load query_transform %}
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4">All Teams</h1>
+  <div class="mb-4">
+    <a href="{% url 'manager:team-create' %}" class="btn btn-primary">
+      Create Team
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Filter Teams</h3>
+          <form method="get" action="">
+            {{ filter_form|crispy }}
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Search Teams</h3>
+          <form method="get" action="">
+            {{ search_form|crispy }}
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    {% if team_list %}
+      <ul class="list-group">
+        {% for team in team_list %}
+          <li class="list-group-item">
+            <a href="{% url "manager:team-detail" pk=team.id %}">
+              {{ team.name }} {% if team_id == team.id %}(My Team) {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead">No teams yet</p>
+    {% endif %}
+  </div>
+   {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+</div>
+{% endblock %}
+
