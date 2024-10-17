@@ -1,37 +1,72 @@
-from django.utils import timezone
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.views import generic
-from django.shortcuts import render, redirect
-from admin_datta.forms import RegistrationForm, LoginForm, UserPasswordChangeForm, UserPasswordResetForm, \
-    UserSetPasswordForm
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetConfirmView, PasswordResetView
-from django.views.generic import CreateView
 from django.contrib.auth import logout
-
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views import generic
+from django.views.generic import CreateView
 
-from manager.forms import TaskSearchForm, TaskFilterForm, TaskForm, WorkerSearchForm, WorkerFilterForm, WorkerForm, \
-    TeamSearchForm, TeamFilterForm, TeamForm, ProjectFilterForm, ProjectSearchForm, ProjectForm
-from manager.models import Task, Team, Worker, Project
+from admin_datta.forms import (
+    LoginForm,
+    RegistrationForm,
+    UserPasswordChangeForm,
+    UserPasswordResetForm,
+    UserSetPasswordForm,
+)
+from manager.forms import (
+    ProjectFilterForm,
+    ProjectForm,
+    ProjectSearchForm,
+    TaskFilterForm,
+    TaskForm,
+    TaskSearchForm,
+    TeamFilterForm,
+    TeamForm,
+    TeamSearchForm,
+    WorkerFilterForm,
+    WorkerForm,
+    WorkerSearchForm,
+)
+from manager.models import Project, Task, Team, Worker
 
 
 # Create your views here.
 @login_required
 def index(request):
     today = timezone.now()
-    my_tasks_month = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month,
-                                         deadline__year=today.year).count()
-    my_tasks_month_done = Task.objects.filter(assignees__id=request.user.id, deadline__month=today.month,
-                                              deadline__year=today.year, is_completed=True).count()
+    my_tasks_month = Task.objects.filter(
+        assignees__id=request.user.id,
+        deadline__month=today.month,
+        deadline__year=today.year,
+    ).count()
+    my_tasks_month_done = Task.objects.filter(
+        assignees__id=request.user.id,
+        deadline__month=today.month,
+        deadline__year=today.year,
+        is_completed=True,
+    ).count()
     if my_tasks_month != 0:
         per_my_tasks = round((my_tasks_month_done / my_tasks_month)) * 100
     else:
         per_my_tasks = 0
-    my_projects_month = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
-                                               deadline__year=today.year).count()
-    my_projects_month_done = Project.objects.filter(participants__id=request.user.id, deadline__month=today.month,
-                                                    deadline__year=today.year, is_completed=True).count()
+    my_projects_month = Project.objects.filter(
+        participants__id=request.user.id,
+        deadline__month=today.month,
+        deadline__year=today.year,
+    ).count()
+    my_projects_month_done = Project.objects.filter(
+        participants__id=request.user.id,
+        deadline__month=today.month,
+        deadline__year=today.year,
+        is_completed=True,
+    ).count()
     if my_projects_month != 0:
         per_my_projects = round((my_projects_month_done / my_projects_month)) * 100
     else:
@@ -51,7 +86,11 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     paginate_by = 5
     template_name = "manager/task_list.html"
-    queryset = Task.objects.select_related("task_type").prefetch_related("assignees").order_by("deadline")
+    queryset = (
+        Task.objects.select_related("task_type")
+        .prefetch_related("assignees")
+        .order_by("deadline")
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -81,9 +120,9 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
             if assignees is not None:
                 queryset = queryset.filter(assignees=assignees)
         if search_form.is_valid():
-            queryset = (queryset.
-                        filter(name__icontains=search_form.cleaned_data.
-                               get("name", "")))
+            queryset = queryset.filter(
+                name__icontains=search_form.cleaned_data.get("name", "")
+            )
 
         return queryset
 
@@ -136,13 +175,21 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
 class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     paginate_by = 5
-    queryset = Worker.objects.select_related("position").select_related("team").prefetch_related("projects")
-    ordering = ["last_name", ]
+    queryset = (
+        Worker.objects.select_related("position")
+        .select_related("team")
+        .prefetch_related("projects")
+    )
+    ordering = [
+        "last_name",
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         username = self.request.GET.get("search-username", "")
-        context["search_form"] = WorkerSearchForm(initial={"username": username}, prefix="search")
+        context["search_form"] = WorkerSearchForm(
+            initial={"username": username}, prefix="search"
+        )
         context["filter_form"] = WorkerFilterForm(prefix="filter")
         return context
 
@@ -161,8 +208,9 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
             if projects:
                 queryset = queryset.filter(projects=projects)
         if search_form.is_valid():
-            queryset = queryset.filter(username__icontains=search_form.cleaned_data.
-                                       get("username", ""))
+            queryset = queryset.filter(
+                username__icontains=search_form.cleaned_data.get("username", "")
+            )
         return queryset
 
 
@@ -193,9 +241,13 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
-    queryset = (Team.objects.select_related("team_lead").
-                prefetch_related("projects").
-                prefetch_related("workers")).order_by("name",)
+    queryset = (
+        Team.objects.select_related("team_lead")
+        .prefetch_related("projects")
+        .prefetch_related("workers")
+    ).order_by(
+        "name",
+    )
     template_name = "manager/team_list.html"
     paginate_by = 5
 
@@ -205,7 +257,9 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
             if self.request.user.id in [worker.id for worker in team.workers.all()]:
                 context["team_id"] = team.id
         name = self.request.GET.get("search-name", "")
-        context["search_form"] = TeamSearchForm(initial={"search-name": name}, prefix="search")
+        context["search_form"] = TeamSearchForm(
+            initial={"search-name": name}, prefix="search"
+        )
         context["filter_form"] = TeamFilterForm(prefix="filter")
         return context
 
@@ -218,8 +272,9 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
             if projects is not None:
                 queryset = queryset.filter(projects=projects)
         if search_form.is_valid():
-            queryset = queryset.filter(name__icontains=search_form.cleaned_data.
-                                       get("name", ""))
+            queryset = queryset.filter(
+                name__icontains=search_form.cleaned_data.get("name", "")
+            )
         return queryset
 
 
@@ -282,12 +337,18 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
-    queryset = Project.objects.select_related("team").prefetch_related("participants").order_by("deadline")
+    queryset = (
+        Project.objects.select_related("team")
+        .prefetch_related("participants")
+        .order_by("deadline")
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         name = self.request.GET.get("search-name", "")
-        context["search_form"] = ProjectSearchForm(initial={"name": name}, prefix="search")
+        context["search_form"] = ProjectSearchForm(
+            initial={"name": name}, prefix="search"
+        )
         context["filter_form"] = ProjectFilterForm(prefix="filter")
         return context
 
@@ -306,10 +367,10 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
             if team:
                 queryset = queryset.filter(team__in=team)
         if search_form.is_valid():
-            queryset = queryset.filter(name__icontains=search_form.cleaned_data.
-                                       get("name", ""))
+            queryset = queryset.filter(
+                name__icontains=search_form.cleaned_data.get("name", "")
+            )
         return queryset
-
 
 
 class MyProjectListView(ProjectListView):
@@ -358,32 +419,32 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 # Authentication
 class UserRegistrationView(CreateView):
-    template_name = 'accounts/auth-signup.html'
+    template_name = "accounts/auth-signup.html"
     form_class = RegistrationForm
-    success_url = '/accounts/login/'
+    success_url = "/accounts/login/"
 
 
 class UserLoginView(LoginView):
-    template_name = 'accounts/auth-signin.html'
+    template_name = "accounts/auth-signin.html"
     form_class = LoginForm
 
 
 class UserPasswordResetView(LoginRequiredMixin, PasswordResetView):
-    template_name = 'accounts/auth-reset-password.html'
+    template_name = "accounts/auth-reset-password.html"
     form_class = UserPasswordResetForm
 
 
 class UserPasswordResetConfirmView(LoginRequiredMixin, PasswordResetConfirmView):
-    template_name = 'accounts/auth-password-reset-confirm.html'
+    template_name = "accounts/auth-password-reset-confirm.html"
     form_class = UserSetPasswordForm
 
 
 class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = 'accounts/auth-change-password.html'
+    template_name = "accounts/auth-change-password.html"
     form_class = UserPasswordChangeForm
 
 
 @login_required
 def logout_view(request):
     logout(request)
-    return redirect('/accounts/login/')
+    return redirect("/accounts/login/")
