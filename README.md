@@ -2,6 +2,12 @@
 
 The IT Company Task Manager is a task management system designed to organize workflow in an IT company. The system allows you to create, track, and manage tasks, projects, and employee teams.
 
+## Web site  render:
+- https://it-company-task-manage-1.onrender.com
+Pour login:
+- username: admin1
+- password: example1
+
 ## Features
 
 - **Tasks**
