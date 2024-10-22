@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.conf.urls.static import static
-from django.urls import include, path
+from django.urls import path
 
-from Task_manager import settings
 from manager.views import (
     index,
     MyProjectListView,

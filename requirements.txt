@@ -2,6 +2,7 @@ asgiref==3.8.1
 black==24.8.0
 click==8.1.7
 crispy-bootstrap5==2024.2
+dj-database-url==2.2.0
 Django==5.1.1
 django-admin-datta==1.0.11
 django-crispy-forms==2.3
@@ -10,7 +11,10 @@ mypy-extensions==1.0.0
 packaging==24.1
 pathspec==0.12.1
 platformdirs==4.3.6
+psycopg2-binary==2.9.10
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 six==1.16.0
 sqlparse==0.5.1
 typing_extensions==4.12.2
+whitenoise==6.7.0

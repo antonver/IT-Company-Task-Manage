@@ -1,64 +1,70 @@
 from django.core.management.base import BaseCommand
-from faker import Faker
 from manager.models import Task, TaskType, Worker, Position, Team, Project
 from django.utils import timezone
+from datetime import timedelta
 
 
 class Command(BaseCommand):
-    help = "Fill the database with test data"
+    help = "Fill the database with initial data"
 
     def handle(self, *args, **kwargs):
-        fake = Faker()
 
-        for _ in range(5):
-            Position.objects.create(name=fake.job())
+        Worker.objects.all().delete()
+        Position.objects.all().delete()
+        TaskType.objects.all().delete()
+        Team.objects.all().delete()
+        Project.objects.all().delete()
 
-        for _ in range(3):
-            team_lead = Worker.objects.create_user(
-                username=fake.user_name(),
-                first_name=fake.first_name(),
-                last_name=fake.last_name(),
-                email=fake.email(),
-                position=Position.objects.order_by("?").first(),
-            )
-            Team.objects.create(
-                name=fake.company(), slogan=fake.catch_phrase(), team_lead=team_lead
-            )
 
-        for _ in range(10):
-            Worker.objects.create_user(
-                username=fake.user_name(),
-                first_name=fake.first_name(),
-                last_name=fake.last_name(),
-                email=fake.email(),
-                position=Position.objects.order_by("?").first(),
-                team=Team.objects.order_by("?").first(),
-            )
+        position_dev = Position.objects.create(name="Developer")
+        position_pm = Position.objects.create(name="Project Manager")
+        position_tl = Position.objects.create(name="Team Lead")
 
-        for _ in range(5):
-            TaskType.objects.create(name=fake.word())
+        task_type_bug = TaskType.objects.create(name="Bug")
+        task_type_feature = TaskType.objects.create(name="Feature")
 
-        for _ in range(3):
-            project = Project.objects.create(
-                name=fake.company(),
-                description=fake.text(),
-                deadline=fake.future_date(),
-                teams=Team.objects.order_by("?").first(),
-            )
-            project.participants.set(Worker.objects.order_by("?")[:5])
-
-        for _ in range(10):
-            task = Task.objects.create(
-                name=fake.word(),
-                description=fake.text(),
-                deadline=fake.future_date(),
-                is_completed=fake.boolean(),
-                priority=fake.random_element(elements=[0, 1, 2, 3]),
-                task_type=TaskType.objects.order_by("?").first(),
-                project=Project.objects.order_by("?").first(),
-            )
-            task.assignees.set(Worker.objects.order_by("?")[:3])
-
-        self.stdout.write(
-            self.style.SUCCESS("Successfully filled the database with test data")
+        worker_3 = Worker.objects.create_user(
+            username="johndoe2", password="password123", first_name="John", last_name="Doe", position=position_dev
         )
+        # Создаем команду без team_lead
+        team = Team.objects.create(name="Alpha", slogan="Teamwork makes the dream work", team_lead=worker_3)
+
+        worker_1 = Worker.objects.create_user(
+            username="johndoe1", password="password123", first_name="John", last_name="Doe", position=position_dev, team=team
+        )
+        worker_2 = Worker.objects.create_user(
+            username="janedoe1", password="password123", first_name="Jane", last_name="Doe", position=position_pm, team=team
+        )
+
+        team.team_lead = worker_2
+        team.save()
+
+        project = Project.objects.create(
+            name="Website Redesign",
+            description="Redesign the company website",
+            deadline=timezone.now() + timedelta(days=30),
+            team=team,
+        )
+        project.participants.set([worker_1, worker_2])
+
+        task_1 = Task.objects.create(
+            name="Fix login bug",
+            description="Fix the login issue with invalid credentials.",
+            deadline=timezone.now() + timedelta(days=7),
+            priority=2,
+            task_type=task_type_bug,
+            project=project,
+        )
+        task_1.assignees.set([worker_1])
+
+        task_2 = Task.objects.create(
+            name="Add user profile feature",
+            description="Implement user profiles for the website.",
+            deadline=timezone.now() + timedelta(days=14),
+            priority=1,
+            task_type=task_type_feature,
+            project=project,
+        )
+        task_2.assignees.set([worker_2])
+
+        self.stdout.write(self.style.SUCCESS("Data successfully loaded."))

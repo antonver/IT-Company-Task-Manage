@@ -14,7 +14,7 @@ class Task(models.Model):
         "TaskType", on_delete=models.CASCADE, related_name="tasks"
     )
     assignees = models.ManyToManyField(
-        "Worker", blank=False, null=False, related_name="tasks"
+        "Worker", blank=False, related_name="tasks"
     )
     project = models.ForeignKey(
         "Project", on_delete=models.CASCADE, blank=True, null=True, related_name="tasks"

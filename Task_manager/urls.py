@@ -19,10 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from Task_manager import settings
+import settings.base
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("manager.urls", namespace="manager")),
     path("", include("admin_datta.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.base.STATIC_URL, document_root=settings.base.STATIC_ROOT)
