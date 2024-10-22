@@ -1,0 +1,153 @@
+[
+{
+    "model": "manager.task",
+    "pk": 1,
+    "fields": {
+        "name": "Fix login bug",
+        "description": "Fix the login issue with invalid credentials.",
+        "deadline": "2024-10-28",
+        "is_completed": false,
+        "priority": 2,
+        "task_type": 29,
+        "project": 1,
+        "assignees": [
+            33
+        ]
+    }
+},
+{
+    "model": "manager.task",
+    "pk": 2,
+    "fields": {
+        "name": "Add user profile feature",
+        "description": "Implement user profiles for the website.",
+        "deadline": "2024-11-04",
+        "is_completed": false,
+        "priority": 1,
+        "task_type": 30,
+        "project": 1,
+        "assignees": [
+            34
+        ]
+    }
+},
+{
+    "model": "manager.tasktype",
+    "pk": 29,
+    "fields": {
+        "name": "Bug"
+    }
+},
+{
+    "model": "manager.tasktype",
+    "pk": 30,
+    "fields": {
+        "name": "Feature"
+    }
+},
+{
+    "model": "manager.worker",
+    "pk": 32,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$iGvcu5R71ZIWg3eSxyARYw$u1GjlGMd4TuOlJLOqYMjW2YTmxpKYOSSFTEQyuYfwXo=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "johndoe2",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-10-21T23:37:22.793Z",
+        "position": 38,
+        "team": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "manager.worker",
+    "pk": 33,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$Y97HGDXpmyMSjzcSZWTgUx$kiKwGWtyKq8ixfoUCOooH/zspebUT5SJE5tdjFiowR8=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "johndoe1",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-10-21T23:37:23.653Z",
+        "position": 38,
+        "team": 10,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "manager.worker",
+    "pk": 34,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$kwI6gB9EgLAbrJfgoMCoNE$GmxqVhQEBhlkYOppa1GeoHwq+gU4V5vypU1Z+vaQ/Vc=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "janedoe1",
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-10-21T23:37:24.578Z",
+        "position": 39,
+        "team": 10,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "manager.position",
+    "pk": 38,
+    "fields": {
+        "name": "Developer"
+    }
+},
+{
+    "model": "manager.position",
+    "pk": 39,
+    "fields": {
+        "name": "Project Manager"
+    }
+},
+{
+    "model": "manager.position",
+    "pk": 40,
+    "fields": {
+        "name": "Team Lead"
+    }
+},
+{
+    "model": "manager.team",
+    "pk": 10,
+    "fields": {
+        "name": "Alpha",
+        "slogan": "Teamwork makes the dream work",
+        "team_lead": 34
+    }
+},
+{
+    "model": "manager.project",
+    "pk": 1,
+    "fields": {
+        "deadline": "2024-11-20",
+        "description": "Redesign the company website",
+        "name": "Website Redesign",
+        "team": 10,
+        "is_completed": false,
+        "participants": [
+            33,
+            34
+        ]
+    }
+}
+]
