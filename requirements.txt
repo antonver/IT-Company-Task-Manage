@@ -4,8 +4,10 @@ click==8.1.7
 crispy-bootstrap5==2024.2
 dj-database-url==2.2.0
 Django==5.1.1
+django-admin-datta==1.0.11
 django-crispy-forms==2.3
 Faker==30.1.0
+gunicorn==23.0.0
 mypy-extensions==1.0.0
 packaging==24.1
 pathspec==0.12.1
