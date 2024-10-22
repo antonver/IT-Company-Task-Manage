@@ -1,0 +1,67 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="display-4 mb-4">{{ project.name|upper }}</h2>
+
+  <div class="mb-4">
+    <a href="{% url 'manager:project-delete' pk=project.id %}" class="btn btn-danger me-2">
+      <i class="fas fa-trash-alt"></i> Delete
+    </a>
+    <a href="{% url 'manager:project-update' pk=project.id %}" class="btn btn-primary">
+      <i class="fas fa-edit"></i> Update
+    </a>
+  </div>
+
+  <ul class="list-group mb-4">
+    <li class="list-group-item">
+      <h5 class="mb-1"><strong>Name:</strong></h5> {{ project.name }}
+    </li>
+    <li class="list-group-item">
+      <h5 class="mb-1"><strong>Description:</strong></h5> {{ project.description }}
+    </li>
+    <li class="list-group-item">
+      <h5 class="mb-1"><strong>Deadline:</strong></h5> {{ project.deadline }}
+    </li>
+    <li class="list-group-item">
+      <h5 class="mb-1"><strong>Team:</strong></h5> {{ project.team }}
+    </li>
+  </ul>
+
+  <!-- Workers Section -->
+  <div class="mb-5">
+    <h4>Workers assigned to this project:</h4>
+    <ul class="list-group">
+      {% if project.participants.all %}
+        {% for t in project.participants.all %}
+          <li class="list-group-item">
+            <a href="{% url 'manager:worker-detail' pk=t.id %}">
+              {{ t.last_name }} {{ t.first_name }}
+            </a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item">No workers assigned to this project</li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <!-- Tasks Section -->
+  <div class="mb-5">
+    <h4>Tasks associated with this project:</h4>
+    <ul class="list-group">
+      {% if project.tasks.all %}
+        {% for t in project.tasks.all %}
+          <li class="list-group-item">
+            <a href="{% url 'manager:task-detail' pk=t.id %}">
+              {{ t.name }} - Deadline: {{ t.deadline }}
+            </a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item">No tasks yet</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

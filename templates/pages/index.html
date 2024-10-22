@@ -1,0 +1,66 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="row">
+
+    <!--[ daily sales section ] start-->
+    <div class="col-md-6 col-xl-4">
+      <div class="card daily-sales">
+        <div class="card-block">
+          <h6 class="mb-4">MY TASKS FOR THIS MONTH</h6>
+          <div class="row d-flex align-items-center">
+            <div class="col-9">
+              <h4 class="f-w-300 d-flex align-items-center m-b-0">
+
+
+                LEVEL OF ACCOMPLISH</h4>
+            </div>
+
+            <div class="col-3 text-right">
+              <p class="m-b-0">{{ per_my_tasks }}%</p>
+            </div>
+          </div>
+          <div class="progress m-t-30" style="height: 7px;">
+            <div class="progress-bar progress-c-theme" role="progressbar" style="width: {{ per_my_tasks }}%;"
+              aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--[ daily sales section ] end-->
+
+    <div class="col-md-6 col-xl-4">
+      <div class="card daily-sales">
+        <div class="card-block">
+          <h6 class="mb-4">MY PROJECTS FOR THIS MONTH</h6>
+          <div class="row d-flex align-items-center">
+            <div class="col-9">
+              <h4 class="f-w-300 d-flex align-items-center m-b-0">
+
+
+                LEVEL OF ACCOMPLISH</h4>
+            </div>
+
+            <div class="col-3 text-right">
+              <p class="m-b-0">{{ per_my_projects }}%</p>
+            </div>
+          </div>
+          <div class="progress m-t-30" style="height: 7px;">
+            <div class="progress-bar progress-a-theme" role="progressbar" style="width: {{ per_my_projects }}%;"
+              aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}

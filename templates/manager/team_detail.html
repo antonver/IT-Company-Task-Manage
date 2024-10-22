@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">
+    {% if worker_is_here %}My team: {% endif %}{{ team.name|upper }}
+  </h2>
+
+  <div class="mb-4 text-center">
+    <a href="{% url 'manager:team-delete' pk=team.id %}" class="btn btn-danger me-2">
+      <i class="fas fa-trash-alt"></i> Delete
+    </a>
+    <a href="{% url 'manager:team-update' pk=team.id %}" class="btn btn-primary">
+      <i class="fas fa-edit"></i> Update
+    </a>
+  </div>
+
+  <ul class="list-group mb-4">
+    <li class="list-group-item"><strong>Name:</strong> {{ team.name }}</li>
+    <li class="list-group-item"><strong>Team Lead:</strong> {{ task.team_lead }}</li>
+    <li class="list-group-item"><strong>Slogan:</strong> {{ team.slogan }}</li>
+  </ul>
+
+  <h4>Workers that are part of the team:</h4>
+  <ul class="list-group mb-4">
+    {% if team.workers %}
+      {% for t in team.workers.all %}
+        <li class="list-group-item">
+          <a href="{% url 'manager:worker-detail' pk=t.id %}">
+            {{ t.last_name }} {{ t.first_name }}
+            {% if t.id == request.user.id %} (Me) {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item">No workers in this team.</li>
+    {% endif %}
+  </ul>
+
+  <h4>Projects this team is involved in:</h4>
+  <ul class="list-group">
+    {% if team.projects %}
+      {% for t in team.projects.all %}
+        <li class="list-group-item">
+          <a href="{% url 'manager:project-detail' pk=t.id %}">{{ t.name }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item">No projects assigned to this team.</li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}

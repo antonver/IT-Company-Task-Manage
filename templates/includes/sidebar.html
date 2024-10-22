@@ -1,0 +1,119 @@
+ <script src="https://unpkg.com/feather-icons"></script>
+<nav class="pcoded-navbar">
+  <div class="navbar-wrapper">
+    <div class="navbar-brand header-logo">
+      <a href="{% url 'manager:index' %}" class="b-brand">
+        <div class="b-bg">
+          <i class="feather icon-trending-up"></i>
+        </div>
+        <span class="b-title">Task manager</span>
+      </a>
+      <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
+    </div>
+    <div class="navbar-content scroll-div">
+    <br>
+      <ul class="nav pcoded-inner-navbar">
+        <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" class="nav-item {% if 'index' in segment %}active{% endif %}">
+        <li>
+          <a href="{% url 'manager:task-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="clipboard"></i></span><span class="pcoded-mtext">All tasks</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:worker-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="users"></i></span><span class="pcoded-mtext">All workers</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:team-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="slack"></i></span><span class="pcoded-mtext">All teams</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:project-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="code"></i></span><span class="pcoded-mtext">All projects</span>
+          </a>
+        </li> 
+        <hr>
+        <li>
+          <a href="{% url 'manager:my-task-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="clipboard" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My tasks</span>
+          </a>
+        </li> 
+        <li>
+          <a href="{% url 'manager:my-project-list' %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="code" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My projects</span>
+          </a>
+        </li>
+      {% if request.user.team  %}
+        <li>
+          <a href="{% url 'manager:team-detail' pk=request.user.team.id %}" class="nav-link ">
+            <span class="pcoded-micon"><i data-feather="slack" style="color: #ff8000;"></i></span><span class=" pcoded-mtext">My team</span>
+          </a>
+        </li> 
+      {% endif %}
+        {% if request.user.is_authenticated %}
+          <li>
+        <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        {% else %}
+            <li>
+              <a href="{% url 'login' %}">Login</a>
+            </li>
+        {% endif %}
+
+
+
+        {% if request.user.is_authenticated and not request.user.is_superuser %}
+        <li class="nav-item pcoded-menu-caption">
+          <label>UI Element</label>
+        </li>
+        <li
+          data-username="basic components Button Alert Badges breadcrumb Paggination progress Tooltip popovers Carousel Cards Collapse Tabs pills Modal Grid System Typography Extra Shadows Embeds"
+          class="nav-item pcoded-hasmenu {% if 'basic_components' in parent %}active pcoded-trigger{% endif %}">
+          <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i
+                class="feather icon-box"></i></span><span class="pcoded-mtext">Components</span></a>
+          <ul class="pcoded-submenu">
+            <li class="{% if 'button' in segment %}active{% endif %}"><a href="{% url 'bc_button' %}" class="">Button</a></li>
+            <li class="{% if 'badges' in segment %}active{% endif %}"><a href="{% url 'bc_badges' %}" class="">Badges</a></li>
+            <li class="{% if 'collapse' in segment %}active{% endif %}"><a href="{% url 'bc_collapse' %}" class="">Collapse</a></li>
+            <li class="{% if 'navs_&_tabs' in segment %}active{% endif %}"><a href="{% url 'bc_tabs' %}" class="">Tabs & pills</a></li>
+            <li class="{% if 'typography' in segment %}active{% endif %}"><a href="{% url 'bc_typography' %}" class="">Typography</a></li>
+
+
+            <li class="{% if 'feather_icon' in segment %}active{% endif %}"><a href="{% url 'icon_feather' %}" class="">Feather<span
+                  class="pcoded-badge label label-danger">NEW</span></a></li>
+          </ul>
+        </li>
+        <li class="nav-item pcoded-menu-caption">
+          <label>Forms & table</label>
+        </li>
+        <li data-username="form elements advance componant validation masking wizard picker select" class="nav-item {% if 'form_elements' in segment %}active{% endif %}">
+          <a href="{% url 'form_elements' %}" class="nav-link "><span class="pcoded-micon"><i
+                class="feather icon-file-text"></i></span><span class="pcoded-mtext">Form elements</span></a>
+        </li>
+        <li data-username="Table bootstrap datatable footable" class="nav-item {% if 'basic_tables' in segment %}active{% endif %}">
+          <a href="{% url 'basic_tables' %}" class="nav-link "><span class="pcoded-micon"><i
+                class="feather icon-server"></i></span><span class="pcoded-mtext">Table</span></a>
+        </li>
+        <li class="nav-item pcoded-menu-caption">
+          <label>Chart & Maps</label>
+        </li>
+        <li data-username="Charts Morris" class="nav-item {% if 'morris_chart' in segment %}active{% endif %}"><a href="{% url 'morris_chart' %}" class="nav-link "><span
+              class="pcoded-micon"><i class="feather icon-pie-chart"></i></span><span
+              class="pcoded-mtext">Chart</span></a>
+        </li>
+        <li data-username="Maps Google" class="nav-item {% if 'google_maps' in segment %}active{% endif %}"><a href="{% url 'google_maps' %}" class="nav-link "><span
+              class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Maps</span></a>
+        </li>
+        <li class="nav-item pcoded-menu-caption">
+          <label>Pages</label>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+      <script>
+      feather.replace();
+    </script>
+  </div>
+</nav>

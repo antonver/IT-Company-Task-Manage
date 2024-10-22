@@ -1,0 +1,31 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">
+    {{ object|yesno:"Update,Create,No" }} Team
+  </h2>
+  
+  <form method="post" action="" class="w-50 mx-auto">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-check"></i> Submit
+      </button>
+    </div>
+  </form>
+
+  <!-- Optional: Space for success/error messages -->
+  {% if messages %}
+    <div class="mt-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+

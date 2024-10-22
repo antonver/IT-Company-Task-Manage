@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-4">Username: <span class="text-capitalize">{{ worker.username }}</span></h3>
+
+  <div class="mb-4">
+    <a href="{% url 'manager:worker-delete' pk=worker.id %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'manager:worker-update' pk=worker.id %}" class="btn btn-primary">Update</a>
+  </div>
+
+  <ul class="list-group">
+    <li class="list-group-item"><strong>Username:</strong> {{ worker.username }}</li>
+    <li class="list-group-item"><strong>Position:</strong> {{ worker.position }}</li>
+    <li class="list-group-item"><strong>Last Name:</strong> {{ worker.last_name }}</li>
+    <li class="list-group-item"><strong>First Name:</strong> {{ worker.first_name }}</li>
+    <li class="list-group-item"><strong>Email:</strong> {{ worker.email }}</li>
+    
+    {% if worker.team %}
+      <li class="list-group-item">
+        <strong>Team:</strong> 
+        <a href="{% url 'manager:team-detail' pk=worker.team.id %}">{{ worker.team }}</a>
+      </li>
+    {% else %}
+      <li class="list-group-item">No team assigned yet</li>
+    {% endif %}
+  </ul>
+  
+  <br>
+
+  <h4>Projects:</h4>
+  <ul class="list-group mt-3">
+    {% if worker.projects %}
+      {% for project in worker.projects.all %}
+        <li class="list-group-item">
+          <a href="{% url 'manager:project-detail' pk=project.id %}">{{ project.name }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item">No projects assigned</li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}
