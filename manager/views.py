@@ -5,7 +5,7 @@ from django.contrib.auth.views import (
     LoginView,
     PasswordChangeView,
     PasswordResetConfirmView,
-    PasswordResetView,
+    PasswordResetView, LogoutView,
 )
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -13,13 +13,6 @@ from django.utils import timezone
 from django.views import generic
 from django.views.generic import CreateView
 
-from admin_datta.forms import (
-    LoginForm,
-    RegistrationForm,
-    UserPasswordChangeForm,
-    UserPasswordResetForm,
-    UserSetPasswordForm,
-)
 from manager.forms import (
     ProjectFilterForm,
     ProjectForm,
@@ -32,13 +25,12 @@ from manager.forms import (
     TeamSearchForm,
     WorkerFilterForm,
     WorkerForm,
-    WorkerSearchForm,
+    WorkerSearchForm, LoginForm,
 )
 from manager.models import Project, Task, Team, Worker
 
 
-# Create your views here.
-@login_required
+@login_required()
 def index(request):
     today = timezone.now()
     my_tasks_month = Task.objects.filter(
@@ -417,34 +409,11 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "manager/project_confirm_delete.html"
 
 
-# Authentication
-class UserRegistrationView(CreateView):
-    template_name = "accounts/auth-signup.html"
-    form_class = RegistrationForm
-    success_url = "/accounts/login/"
-
-
-class UserLoginView(LoginView):
-    template_name = "accounts/auth-signin.html"
+class CustomLoginView(LoginView):
     form_class = LoginForm
+    template_name = 'registration/login.html'
 
 
-class UserPasswordResetView(LoginRequiredMixin, PasswordResetView):
-    template_name = "accounts/auth-reset-password.html"
-    form_class = UserPasswordResetForm
-
-
-class UserPasswordResetConfirmView(LoginRequiredMixin, PasswordResetConfirmView):
-    template_name = "accounts/auth-password-reset-confirm.html"
-    form_class = UserSetPasswordForm
-
-
-class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = "accounts/auth-change-password.html"
-    form_class = UserPasswordChangeForm
-
-
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect("/accounts/login/")
+class CustomLogoutView(LoginRequiredMixin, LogoutView):
+    template_name = 'registration/logged_out.html'
+    next_page = reverse_lazy('login')

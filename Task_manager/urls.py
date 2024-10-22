@@ -20,9 +20,12 @@ from django.urls import path, include
 from django.conf.urls.static import static
 
 import settings.base
+from manager.views import CustomLoginView, CustomLogoutView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("manager.urls", namespace="manager")),
-    path('', include('admin_datta.urls')),
-] + static(settings.base.STATIC_URL, document_root=settings.base.STATIC_ROOT)
+                  path("admin/", admin.site.urls),
+                  path("", include("manager.urls", namespace="manager")),
+                  path("accounts/", include("django.contrib.auth.urls")),
+                  path('accounts/login/', CustomLoginView.as_view(), name='login'),
+                  path('accounts/logout/', CustomLogoutView.as_view(), name='logout'),
+              ] + static(settings.base.STATIC_URL, document_root=settings.base.STATIC_ROOT)

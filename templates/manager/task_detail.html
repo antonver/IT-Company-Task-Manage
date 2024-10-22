@@ -2,41 +2,59 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4">{{ task.name|upper}}</h2>
+  <h2 class="mb-4">{{ task.name|upper }}</h2>
 
   <div class="mb-4">
-    <a href="{% url "manager:task-delete" pk=task.id %}" class="btn btn-danger">Delete</a>
-    <a href="{% url "manager:task-update" pk=task.id %}" class="btn btn-primary">Update</a>
+    <a href="{% url 'manager:task-delete' pk=task.id %}" class="btn btn-danger me-2">
+      <i class="fas fa-trash-alt"></i> Delete
+    </a>
+    <a href="{% url 'manager:task-update' pk=task.id %}" class="btn btn-primary">
+      <i class="fas fa-edit"></i> Update
+    </a>
   </div>
 
-  <ul class="list-group">
-    <ul class="list-group">
-      <li class="list-group-item"><h5 style="display:inline-block"><strong>Name:</strong></h5> {{ task.name }}</li>
-  <li class="list-group-item"><h5 style="display:inline-block"><strong>Description:</strong></h5> {{ task.description }}</li>
-  <li class="list-group-item"><h5 style="display:inline-block"><strong>Deadline:</strong></h5> {{ task.deadline }}</li>
-  <li class="list-group-item"><h5 style="display:inline-block"><strong>Is completed:</strong></h5> {{ task.is_completed }}</li>
-  <li class="list-group-item"><h5 style="display:inline-block"><strong>Priority:</strong></h5> {{ task.priority }}</li>
-  <li class="list-group-item"><h5 style="display:inline-block"><strong>Type of the task:</strong></h5> {{ task.task_type }}</li>
+  <ul class="list-group mb-4">
+    <li class="list-group-item">
+      <h5><strong>Name:</strong></h5> {{ task.name }}
+    </li>
+    <li class="list-group-item">
+      <h5><strong>Description:</strong></h5> {{ task.description }}
+    </li>
+    <li class="list-group-item">
+      <h5><strong>Deadline:</strong></h5> {{ task.deadline|date:"F j, Y" }}
+    </li>
+    <li class="list-group-item">
+      <h5><strong>Is completed:</strong></h5> {{ task.is_completed|yesno:"Yes,No" }}
+    </li>
+    <li class="list-group-item">
+      <h5><strong>Priority:</strong></h5> {{ task.get_priority_display }}
+    </li>
+    <li class="list-group-item">
+      <h5><strong>Type of Task:</strong></h5> {{ task.task_type }}
+    </li>
 
     {% if task.project %}
-      <li class="list-group-item"><strong>Part of the tasks of:</strong> {{ task.project }} project</li>
-    {% endif %}
-      <br>
       <li class="list-group-item">
-        <ul class="list-group">
-          <h4>Workers that are occupied by this task:</h4>
-        <br>
-        {% if task.assignees %}
-          {% for t in task.assignees.all %}
-            <li class ="list-group-item"><a href="{% url "manager:worker-detail" pk=t.id %}">{{ t.last_name }} {{ t.first_name }}</a></li>
-          {% endfor %}
-        {% else %}
-          <li class ="list-group-item">No one is occupied by this
-        {% endif %}
-      </ul>
+        <h5><strong>Part of Project:</strong></h5> {{ task.project.name }}
       </li>
+    {% endif %}
   </ul>
-  </ul>
+
+  <div class="mb-4">
+    <h4>Workers Assigned to this Task:</h4>
+    <ul class="list-group">
+      {% if task.assignees.exists %}
+        {% for worker in task.assignees.all %}
+          <li class="list-group-item">
+            <a href="{% url 'manager:worker-detail' pk=worker.id %}">
+              {{ worker.first_name }} {{ worker.last_name }}
+            </a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item">No workers are assigned to this task.</li>
+      {% endif %}
+    </ul>
+  </div>
 </div>
 {% endblock %}
-

@@ -1,4 +1,3 @@
-{% load i18n static admin_datta %}
  <script src="https://unpkg.com/feather-icons"></script>
 <nav class="pcoded-navbar">
   <div class="navbar-wrapper">
@@ -12,17 +11,9 @@
       <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
     </div>
     <div class="navbar-content scroll-div">
+    <br>
       <ul class="nav pcoded-inner-navbar">
-        <li class="nav-item pcoded-menu-caption">
-          <label>Navigation</label>
-        </li>
         <li data-username="dashboard Default Ecommerce CRM Analytics Crypto Project" class="nav-item {% if 'index' in segment %}active{% endif %}">
-          {% if request.user.is_superuser %}
-          <a href="{% url 'admin:index' %}" class="nav-link ">
-          {% endif %}
-            <span class="pcoded-micon"><i data-feather="briefcase"></i></span><span class="pcoded-mtext">Admin page</span>
-          </a>
-        </li>
         <li>
           <a href="{% url 'manager:task-list' %}" class="nav-link ">
             <span class="pcoded-micon"><i data-feather="clipboard"></i></span><span class="pcoded-mtext">All tasks</span>
@@ -61,18 +52,16 @@
           </a>
         </li> 
       {% endif %}
-        {% if not request.user.is_authenticated %}
-        <li
-          data-username="Authentication Sign up Sign in reset password Change password Personal information profile settings map form subscribe"
-          class="nav-item pcoded-hasmenu">
-          <a href="javascript:" class="nav-link "><span class="pcoded-micon"><i
-                class="feather icon-lock"></i></span><span class="pcoded-mtext">Authentication</span></a>
-          <ul class="pcoded-submenu">
-            <<li class=""><a href="{% url 'login' %}" class="">Sign IN</a></li>
-            <li class=""><a href="{% url 'register' %}" class="">Sign UP</a></li> -->
-          </ul>
-        </li>
+        {% if request.user.is_authenticated %}
+          <li>
+        <a href="{% url 'logout' %}">Logout</a>
+            </li>
+        {% else %}
+            <li>
+              <a href="{% url 'login' %}">Login</a>
+            </li>
         {% endif %}
+
 
 
         {% if request.user.is_authenticated and not request.user.is_superuser %}

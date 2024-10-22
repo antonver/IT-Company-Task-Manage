@@ -1,70 +1,92 @@
+import random
 from django.core.management.base import BaseCommand
+from faker import Faker
 from manager.models import Task, TaskType, Worker, Position, Team, Project
-from django.utils import timezone
-from datetime import timedelta
 
+fake = Faker()
 
 class Command(BaseCommand):
-    help = "Fill the database with initial data"
+    help = "Generate random data for the database"
 
     def handle(self, *args, **kwargs):
+        self.create_positions()
+        self.create_teams_and_workers()
+        self.create_task_types()
+        self.create_projects_and_tasks()
 
-        Worker.objects.all().delete()
-        Position.objects.all().delete()
-        TaskType.objects.all().delete()
-        Team.objects.all().delete()
-        Project.objects.all().delete()
+    def create_positions(self):
+        positions = ["Developer", "Designer", "Manager", "Tester", "Support"]
+        for position_name in positions:
+            Position.objects.get_or_create(name=position_name)
+        self.stdout.write(self.style.SUCCESS(f"Created {len(positions)} positions"))
 
+    def create_teams_and_workers(self):
+        # Create Teams and assign Workers
+        for _ in range(10):  # Create 10 teams
+            team_lead = self.create_worker()
+            team = Team.objects.create(
+                name=fake.company(),
+                slogan=fake.catch_phrase(),
+                team_lead=team_lead
+            )
 
-        position_dev = Position.objects.create(name="Developer")
-        position_pm = Position.objects.create(name="Project Manager")
-        position_tl = Position.objects.create(name="Team Lead")
+            # Create workers and assign to the team
+            for _ in range(5):  # Each team has 5 workers
+                worker = self.create_worker(team=team)
+                worker.team = team
+                worker.save()
 
-        task_type_bug = TaskType.objects.create(name="Bug")
-        task_type_feature = TaskType.objects.create(name="Feature")
+            self.stdout.write(self.style.SUCCESS(f"Created team: {team.name} with 5 workers"))
 
-        worker_3 = Worker.objects.create_user(
-            username="johndoe2", password="password123", first_name="John", last_name="Doe", position=position_dev
+    def create_worker(self, team=None):
+        # Create a Worker with random Position
+        position = Position.objects.order_by("?").first()
+        worker = Worker.objects.create_user(
+            username=fake.user_name(),
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            email=fake.email(),
+            position=position,
+            team=team
         )
-        # Создаем команду без team_lead
-        team = Team.objects.create(name="Alpha", slogan="Teamwork makes the dream work", team_lead=worker_3)
+        worker.set_password("password123")  # Set a default password
+        worker.save()
+        return worker
 
-        worker_1 = Worker.objects.create_user(
-            username="johndoe1", password="password123", first_name="John", last_name="Doe", position=position_dev, team=team
-        )
-        worker_2 = Worker.objects.create_user(
-            username="janedoe1", password="password123", first_name="Jane", last_name="Doe", position=position_pm, team=team
-        )
+    def create_task_types(self):
+        task_types = ["Development", "Design", "Testing", "Support", "Documentation"]
+        for task_type_name in task_types:
+            TaskType.objects.get_or_create(name=task_type_name)
+        self.stdout.write(self.style.SUCCESS(f"Created {len(task_types)} task types"))
 
-        team.team_lead = worker_2
-        team.save()
+    def create_projects_and_tasks(self):
+        workers = list(Worker.objects.all())
+        task_types = list(TaskType.objects.all())
+        teams = list(Team.objects.all())
 
-        project = Project.objects.create(
-            name="Website Redesign",
-            description="Redesign the company website",
-            deadline=timezone.now() + timedelta(days=30),
-            team=team,
-        )
-        project.participants.set([worker_1, worker_2])
+        for _ in range(5):  # Create 5 projects
+            project = Project.objects.create(
+                name=fake.bs(),
+                description=fake.text(),
+                deadline=fake.date_between(start_date="today", end_date="+30d"),
+                team=random.choice(teams),
+                is_completed=random.choice([True, False])
+            )
 
-        task_1 = Task.objects.create(
-            name="Fix login bug",
-            description="Fix the login issue with invalid credentials.",
-            deadline=timezone.now() + timedelta(days=7),
-            priority=2,
-            task_type=task_type_bug,
-            project=project,
-        )
-        task_1.assignees.set([worker_1])
+            # Assign participants to project
+            participants = random.sample(workers, 5)  # Assign 5 random workers to project
+            project.participants.set(participants)
 
-        task_2 = Task.objects.create(
-            name="Add user profile feature",
-            description="Implement user profiles for the website.",
-            deadline=timezone.now() + timedelta(days=14),
-            priority=1,
-            task_type=task_type_feature,
-            project=project,
-        )
-        task_2.assignees.set([worker_2])
+            for _ in range(10):  # Each project has 10 tasks
+                task = Task.objects.create(
+                    name=fake.sentence(nb_words=4),
+                    description=fake.text(),
+                    deadline=fake.date_between(start_date="today", end_date="+30d"),
+                    is_completed=random.choice([True, False]),
+                    priority=random.randint(0, 3),
+                    task_type=random.choice(task_types),
+                    project=project
+                )
+                task.assignees.set(random.sample(workers, 2))  # Assign 2 random workers to task
 
-        self.stdout.write(self.style.SUCCESS("Data successfully loaded."))
+            self.stdout.write(self.style.SUCCESS(f"Created project: {project.name} with 10 tasks"))

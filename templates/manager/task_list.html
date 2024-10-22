@@ -3,33 +3,38 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">{{ mytask|yesno:"My,All,No" }} Tasks</h1>
-  <div class="mb-4">
-    <a href="{% url 'manager:task-create' %}" class="btn btn-primary">
-      Create Task
+  <h1 class="display-4 text-center mb-5">{{ mytask|yesno:"My,All,No" }} Tasks</h1>
+  
+  <div class="d-flex justify-content-between mb-4">
+    <a href="{% url 'manager:task-create' %}" class="btn btn-lg btn-primary">
+      <i class="fas fa-plus-circle"></i> Create Task
     </a>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      <div class="card">
+    <div class="col-md-6 mb-3">
+      <div class="card shadow-sm">
         <div class="card-body">
-          <h3 class="card-title">Filter Tasks</h3>
+          <h3 class="card-title text-primary">Filter Tasks</h3>
           <form method="get" action="">
             {{ filter_form|crispy }}
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <button type="submit" class="btn btn-primary mt-3">
+              <i class="fas fa-filter"></i> Filter
+            </button>
           </form>
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="card">
+    <div class="col-md-6 mb-3">
+      <div class="card shadow-sm">
         <div class="card-body">
-          <h3 class="card-title">Search Tasks</h3>
+          <h3 class="card-title text-primary">Search Tasks</h3>
           <form method="get" action="">
             {{ search_form|crispy }}
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary mt-3">
+              <i class="fas fa-search"></i> Search
+            </button>
           </form>
         </div>
       </div>
@@ -38,23 +43,31 @@
 
   <div class="mt-4">
     {% if task_list %}
+      <h4 class="mb-3">Your Tasks:</h4>
       <ul class="list-group">
-      <h4>Tasks:</h4>
         {% for task in task_list %}
-          <li class="list-group-item">
-            <a href="{% url "manager:task-detail" pk=task.id %}">
-              {{ task.name|capfirst}} - {{ task.get_priority_display }} - {% if task.is_completed %} Completed {% else %} Is not completed {% endif %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url "manager:task-detail" pk=task.id %}" class="text-decoration-none">
+              <strong>{{ task.name|capfirst }}</strong> - {{ task.get_priority_display }}
+              <span class="badge {% if task.is_completed %} bg-success {% else %} bg-warning text-dark {% endif %}">
+                {% if task.is_completed %} Completed {% else %} Not Completed {% endif %}
+              </span>
             </a>
+            <i class="fas fa-chevron-right"></i>
           </li>
         {% endfor %}
       </ul>
     {% else %}
-      <p class="lead">WOW, you are lucky, you have <strong>NO TASKS</strong> yet</p>
+      <div class="alert alert-success mt-4" role="alert">
+        WOW, you are lucky, you have <strong>NO TASKS</strong> yet!
+      </div>
     {% endif %}
   </div>
-   {% block pagination %}
-    {% include "includes/pagination.html" %}
+
+  {% block pagination %}
+    <nav aria-label="Page navigation" class="mt-4">
+      {% include "includes/pagination.html" %}
+    </nav>
   {% endblock %}
 </div>
 {% endblock %}
-

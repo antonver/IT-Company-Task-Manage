@@ -4,12 +4,25 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="mb-4">
-    {{ object|yesno:"Update,Create,No" }} project
+    {% if object %}
+      Update Project
+    {% else %}
+      Create Project
+    {% endif %}
   </h2>
+
   <form method="post" action="">
     {% csrf_token %}
     {{ form|crispy }}
-    <button type="submit" class="btn btn-primary">Submit</button>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'manager:project-list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Cancel
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-check-circle"></i> Submit
+      </button>
+    </div>
   </form>
 </div>
 {% endblock %}

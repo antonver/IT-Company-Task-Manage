@@ -2,10 +2,20 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h1 class="mb-4">Delete worker?</h1>
-  <form action="" method="post">
+  <h1 class="mb-4 text-danger text-center">Delete Worker?</h1>
+  
+  <div class="alert alert-warning text-center">
+    <strong>Warning!</strong> This action will permanently delete the worker's information. Please confirm.
+  </div>
+  
+  <form action="" method="post" class="text-center">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes</button>
+    <button type="submit" class="btn btn-danger btn-lg">
+      <i class="fas fa-trash-alt"></i> Yes, Delete
+    </button>
+    <a href="{% url 'manager:worker-list' %}" class="btn btn-secondary btn-lg">
+      <i class="fas fa-arrow-left"></i> Cancel
+    </a>
   </form>
 </div>
 {% endblock %}
