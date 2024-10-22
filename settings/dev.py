@@ -5,7 +5,7 @@ import dj_database_url
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["it-company-task-manage-1.onrender.com", "127.0.0.1"]
 
 
 # Database

@@ -10,7 +10,7 @@ from .base import *
 DEBUG = False
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["it-company-task-manage-1.onrender.com", "127.0.0.1"]
 
 
 
