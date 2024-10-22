@@ -24,5 +24,5 @@ import settings.base
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("manager.urls", namespace="manager")),
-    path("", include("admin_datta.urls")),
+    path('', include('admin_datta.urls')),
 ] + static(settings.base.STATIC_URL, document_root=settings.base.STATIC_ROOT)
